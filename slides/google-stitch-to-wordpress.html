@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Google Stitch × Antigravity × WordPress Theme 工作流</title>
+  <style>
+    :root{
+      --bg:#07111f;
+      --bg2:#0e1e35;
+      --ink:#f5f8ff;
+      --muted:#a9b7cf;
+      --line:rgba(255,255,255,.13);
+      --brand:#7c9cff;
+      --brand2:#7ee4c3;
+      --accent:#ffd166;
+      --danger:#ff7a90;
+      --card:rgba(255,255,255,.075);
+      --card2:rgba(255,255,255,.11);
+      --shadow:0 28px 80px rgba(0,0,0,.35);
+      --radius:28px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%; margin:0; background:#020814; color:var(--ink); overflow:hidden;}
+    body:before{
+      content:""; position:fixed; inset:-20%; pointer-events:none; opacity:.72;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(124,156,255,.48) 0, rgba(124,156,255,.16) 22%, transparent 42%),
+        radial-gradient(circle at 83% 18%, rgba(126,228,195,.38) 0, rgba(126,228,195,.10) 24%, transparent 46%),
+        radial-gradient(circle at 65% 84%, rgba(255,209,102,.22) 0, rgba(255,209,102,.06) 26%, transparent 48%),
+        linear-gradient(135deg, #06101e 0%, #0a1425 44%, #081528 100%);
+      filter:saturate(120%);
+    }
+    .deck{height:100%; width:100%; position:relative; z-index:1; display:grid; place-items:center; padding:24px;}
+    .slide{
+      display:none; position:relative; overflow:hidden;
+      width:min(100vw - 48px, 1600px); aspect-ratio:16/9;
+      max-height:calc(100vh - 48px);
+      background:linear-gradient(135deg, rgba(9,20,38,.92), rgba(12,28,52,.90));
+      border:1px solid var(--line); border-radius:34px; box-shadow:var(--shadow);
+      padding:70px 82px;
+    }
+    .slide.active{display:block; animation:fade .28s ease both}
+    @keyframes fade{from{opacity:.3; transform:translateY(10px) scale(.99)} to{opacity:1; transform:none}}
+    .slide:before{content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(130deg, rgba(255,255,255,.08), transparent 34%, rgba(255,255,255,.04));}
+    .slide:after{content:""; position:absolute; right:-120px; bottom:-180px; width:520px; height:520px; border-radius:50%; background:radial-gradient(circle, rgba(124,156,255,.32), transparent 68%); pointer-events:none;}
+    .topbar{position:absolute; top:28px; left:82px; right:82px; display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:17px; letter-spacing:.02em; z-index:3;}
+    .brandmark{display:flex; align-items:center; gap:10px; font-weight:700; color:#dfe7ff;}
+    .dot{width:12px; height:12px; border-radius:50%; background:linear-gradient(135deg,var(--brand),var(--brand2)); box-shadow:0 0 22px rgba(124,156,255,.8)}
+    h1,h2,h3,p{margin:0}
+    h1{font-size:78px; line-height:1.02; letter-spacing:-.045em; max-width:1050px;}
+    h2{font-size:54px; line-height:1.08; letter-spacing:-.035em; max-width:1120px;}
+    h3{font-size:28px; line-height:1.25; color:#fff;}
+    p,.body{font-size:24px; line-height:1.55; color:var(--muted);}
+    .lead{font-size:31px; line-height:1.42; color:#dce6f7; max-width:980px; margin-top:24px;}
+    .kicker{font-size:20px; color:var(--brand2); font-weight:800; text-transform:uppercase; letter-spacing:.14em; margin-bottom:22px;}
+    .hero-grid{display:grid; grid-template-columns:1.1fr .9fr; gap:62px; align-items:center; height:100%; padding-top:34px; position:relative; z-index:2;}
+    .pillrow{display:flex; flex-wrap:wrap; gap:12px; margin-top:34px;}
+    .pill{padding:10px 16px; border:1px solid rgba(255,255,255,.18); border-radius:999px; background:rgba(255,255,255,.06); color:#dfe7ff; font-size:18px;}
+    .screen-stack{height:530px; position:relative;}
+    .mock{position:absolute; border-radius:28px; border:1px solid rgba(255,255,255,.22); background:rgba(255,255,255,.08); backdrop-filter:blur(14px); box-shadow:0 28px 75px rgba(0,0,0,.33); overflow:hidden;}
+    .mock.one{width:360px; height:480px; right:115px; top:20px; transform:rotate(-4deg)}
+    .mock.two{width:330px; height:430px; right:20px; top:90px; transform:rotate(6deg); background:rgba(124,156,255,.11)}
+    .mockbar{height:44px; background:rgba(255,255,255,.08); display:flex; gap:8px; align-items:center; padding:0 18px;}
+    .mockbar span{width:11px; height:11px; border-radius:50%; background:rgba(255,255,255,.35)}
+    .mockbody{padding:22px; display:grid; gap:14px;}
+    .mockline{height:16px; border-radius:20px; background:rgba(255,255,255,.17)}
+    .mockline.short{width:55%}.mockline.mid{width:72%}
+    .mockcard{height:92px; border-radius:20px; background:linear-gradient(135deg, rgba(124,156,255,.42), rgba(126,228,195,.22)); border:1px solid rgba(255,255,255,.16)}
+    .two-col{display:grid; grid-template-columns:1fr 1fr; gap:42px; margin-top:38px; position:relative; z-index:2;}
+    .three-col{display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:38px; position:relative; z-index:2;}
+    .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:30px; min-height:190px;}
+    .card.big{min-height:260px;}
+    .card .num{font-size:20px; color:var(--accent); font-weight:900; margin-bottom:12px;}
+    .card p{font-size:21px; margin-top:12px;}
+    ul{margin:20px 0 0 0; padding:0; list-style:none; display:grid; gap:14px;}
+    li{font-size:23px; line-height:1.42; color:#d7e2f4; padding-left:34px; position:relative;}
+    li:before{content:""; position:absolute; left:0; top:.55em; width:12px; height:12px; border-radius:50%; background:linear-gradient(135deg,var(--brand),var(--brand2));}
+    .flow{display:flex; align-items:stretch; justify-content:space-between; gap:18px; margin-top:50px; position:relative; z-index:2;}
+    .step{flex:1; min-height:170px; background:rgba(255,255,255,.075); border:1px solid rgba(255,255,255,.14); border-radius:26px; padding:25px; display:flex; flex-direction:column; justify-content:space-between;}
+    .step small{color:var(--brand2); font-weight:800; font-size:16px; letter-spacing:.1em}.step strong{font-size:25px; line-height:1.2}.step span{font-size:18px; color:var(--muted); line-height:1.35}
+    .arrow{width:36px; display:grid; place-items:center; color:var(--muted); font-size:38px;}
+    .code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace; background:rgba(0,0,0,.28); border:1px solid rgba(255,255,255,.14); border-radius:22px; padding:26px; color:#dfe7ff; font-size:20px; line-height:1.5; white-space:pre-wrap; margin-top:26px;}
+    .highlight{color:var(--brand2); font-weight:900}.yellow{color:var(--accent); font-weight:900}.red{color:var(--danger); font-weight:900}
+    .compare{display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:42px; position:relative; z-index:2;}
+    .compare .side{padding:34px; border-radius:30px; border:1px solid var(--line); background:rgba(255,255,255,.07); min-height:410px;}
+    .side.old{opacity:.78}.side.new{background:linear-gradient(135deg, rgba(124,156,255,.14), rgba(126,228,195,.08));}
+    .source{position:absolute; left:82px; bottom:34px; right:82px; color:rgba(223,231,255,.55); font-size:14px; z-index:3;}
+    .progress{position:fixed; left:0; bottom:0; height:5px; background:linear-gradient(90deg,var(--brand),var(--brand2)); z-index:10; transition:width .2s ease;}
+    .nav{position:fixed; right:26px; bottom:22px; z-index:11; display:flex; gap:10px; align-items:center; color:#dfe7ff; font-size:14px; opacity:.9}
+    button{background:rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.18); border-radius:14px; padding:10px 13px; cursor:pointer; font:inherit} button:hover{background:rgba(255,255,255,.2)}
+    .agenda{display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-top:38px; max-width:1080px;}
+    .agenda div{padding:20px 24px; border-radius:22px; background:rgba(255,255,255,.075); border:1px solid var(--line); font-size:23px; color:#e9efff;}
+    .agenda b{color:var(--brand2); margin-right:12px;}
+    .matrix{width:100%; border-collapse:separate; border-spacing:0 12px; margin-top:34px; position:relative; z-index:2;}
+    .matrix th{font-size:19px; color:var(--brand2); text-align:left; padding:0 22px 8px;}
+    .matrix td{background:rgba(255,255,255,.075); border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:20px 22px; font-size:21px; color:#dbe6f7;}
+    .matrix td:first-child{border-left:1px solid var(--line); border-radius:20px 0 0 20px; color:#fff; font-weight:800;}.matrix td:last-child{border-right:1px solid var(--line); border-radius:0 20px 20px 0;}
+    .diagram{position:relative; height:520px; margin-top:20px; z-index:2;}
+    .node{position:absolute; border-radius:26px; border:1px solid var(--line); background:rgba(255,255,255,.08); padding:24px; box-shadow:0 18px 50px rgba(0,0,0,.2);}
+    .node h3{font-size:25px}.node p{font-size:18px; margin-top:8px}.node.a{left:0;top:50px;width:340px}.node.b{left:410px;top:0;width:360px}.node.c{right:0;top:70px;width:360px}.node.d{left:210px;bottom:30px;width:400px}.node.e{right:180px;bottom:0;width:360px}
+    .line{position:absolute; height:2px; background:linear-gradient(90deg, rgba(124,156,255,.0), rgba(124,156,255,.8), rgba(126,228,195,.0)); transform-origin:left center; opacity:.75}.l1{left:330px;top:150px;width:120px; transform:rotate(-18deg)}.l2{left:760px;top:130px;width:170px; transform:rotate(18deg)}.l3{left:310px;top:290px;width:170px; transform:rotate(55deg)}.l4{left:610px;top:340px;width:230px; transform:rotate(-12deg)}
+    .quote{font-size:42px; line-height:1.25; max-width:1000px; color:#fff; letter-spacing:-.02em; margin-top:28px;}
+    .footer-note{font-size:18px; color:var(--muted); margin-top:26px;}
+    @media (max-width:900px){.deck{padding:0}.slide{width:100vw;height:100vh;max-height:none;aspect-ratio:auto;border-radius:0;padding:76px 28px 90px;overflow:auto}.topbar{left:28px;right:28px}.hero-grid,.two-col,.three-col,.compare{grid-template-columns:1fr}.screen-stack{display:none}h1{font-size:48px}h2{font-size:38px}.lead{font-size:23px}.flow{flex-direction:column}.arrow{transform:rotate(90deg); width:auto}.source{left:28px;right:28px}.agenda{grid-template-columns:1fr}.diagram{height:auto;display:grid;gap:16px}.node{position:relative!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;width:auto!important}.line{display:none}}
+    @media print{html,body{height:auto;overflow:visible;background:#07111f}.deck{display:block;padding:0}.slide{display:block;break-after:page;page-break-after:always;width:100vw;height:56.25vw;max-height:none;border-radius:0;border:0;box-shadow:none}.nav,.progress{display:none}@page{size:16in 9in;margin:0}}
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck">
+    <section class="slide active">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>AI Design to WordPress</div><div>Workshop Deck</div></div>
+      <div class="hero-grid">
+        <div>
+          <div class="kicker">Google Stitch × Antigravity × LocalWP</div>
+          <h1>用 AI 把 UI 設計轉成 WordPress Theme</h1>
+          <p class="lead">從 Prompt 生成畫面、匯出前端程式碼，到在 Antigravity 轉成可安裝的 WordPress 佈景主題。</p>
+          <div class="pillrow"><span class="pill">UI 生成</span><span class="pill">前端匯出</span><span class="pill">AI Coding</span><span class="pill">Theme 化</span></div>
+        </div>
+        <div class="screen-stack" aria-hidden="true"><div class="mock one"><div class="mockbar"><span></span><span></span><span></span></div><div class="mockbody"><div class="mockline short"></div><div class="mockcard"></div><div class="mockline"></div><div class="mockline mid"></div><div class="mockcard"></div></div></div><div class="mock two"><div class="mockbar"><span></span><span></span><span></span></div><div class="mockbody"><div class="mockline mid"></div><div class="mockline"></div><div class="mockcard"></div><div class="mockline short"></div><div class="mockline"></div></div></div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>Agenda</div><div>01</div></div>
+      <div class="kicker">今天會完成的事</div>
+      <h2>從「想法」到「本機 WordPress Theme」的完整流程</h2>
+      <div class="agenda">
+        <div><b>01</b>什麼是 Google Stitch</div>
+        <div><b>02</b>為什麼要用 Stitch</div>
+        <div><b>03</b>匯出功能介紹</div>
+        <div><b>04</b>匯出 ZIP</div>
+        <div><b>05</b>打開 Antigravity</div>
+        <div><b>06</b>安裝 LocalWP</div>
+        <div><b>07</b>轉成 WordPress Theme</div>
+        <div><b>08</b>測試、修正與交付</div>
+      </div>
+      <div class="source">提示：使用鍵盤 ← → 或下方按鈕切換投影片；列印時可另存為 PDF。</div>
+    </section>
+
+    <section class="slide">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>Google Stitch</div><div>02</div></div>
+      <div class="kicker">什麼是 Google Stitch</div>
+      <h2>Google Labs 推出的 AI UI 設計工具</h2>
+      <div class="two-col">
+        <div class="card big"><div class="num">Core Idea</div><h3>From idea to app</h3><p>用自然語言或圖片描述需求，快速產生 Web / Mobile 介面設計，並同時提供前端程式碼。</p></div>
+        <div class="card big"><div class="num">Output</div><h3>UI + Code</h3><p>Stitch 不只產生靜態圖，也能輸出 HTML/CSS 或 React 形式，方便進一步交給開發工具處理。</p></div>
+      </div>
+      <ul>
+        <li>適合從零開始探索產品畫面、Landing Page、App Prototype。</li>
+        <li>可透過對話修改版面、色彩、元件與頁面結構。</li>
+      </ul>
+      <div class="source">資料來源：Google Developers Blog、Google Blog、RAR 設計攻略。</div>
+    </section>
+
+    <section class="slide">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>Why Stitch</div><div>03</div></div>
+      <div class="kicker">為什麼要用 Google Stitch</div>
+      <h2>把「設計前期卡關」變成「可快速迭代的畫面」</h2>
+      <div class="compare">
+        <div class="side old"><h3>傳統流程</h3><ul><li>先畫 Wireframe</li><li>再進 Figma 做視覺</li><li>與開發溝通切版細節</li><li>反覆調 CSS 與 RWD</li><li>初版常常要數天到數週</li></ul></div>
+        <div class="side new"><h3>Stitch 流程</h3><ul><li>用 Prompt 描述產品與風格</li><li>快速生成多個視覺方向</li><li>用對話微調畫面</li><li>匯出程式碼與素材</li><li>把時間留給品牌、體驗與內容</li></ul></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>Prompt</div><div>04</div></div>
+      <div class="kicker">好的 Prompt 決定輸出品質</div>
+      <h2>不要只說「做一個網站」，要把產品、受眾、區塊與風格說清楚</h2>
+      <div class="code">請幫我設計一個 WordPress 課程 Landing Page，目標對象是想學 AI 工具的網站開發者。
+
+頁面包含：Hero、課程亮點、三步驟學習流程、講師介紹、FAQ、CTA。
+
+視覺風格：深色科技感、圓角卡片、藍綠色漸層、乾淨留白，適合桌機版網站。</div>
+      <div class="three-col">
+        <div class="card"><h3>產品背景</h3><p>網站類型、目標族群、使用場景。</p></div>
+        <div class="card"><h3>頁面內容</h3><p>每個區塊需要有哪些資訊。</p></div>
+        <div class="card"><h3>視覺限制</h3><p>品牌色、字體感、版型與氛圍。</p></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>Export</div><div>05</div></div>
+      <div class="kicker">匯出功能介紹</div>
+      <h2>Stitch 的輸出重點：讓設計可以進入下一個開發工具</h2>
+      <table class="matrix">
+        <tr><th>匯出方式</th><th>用途</th><th>適合時機</th></tr>
+        <tr><td>Paste to Figma</td><td>把畫面貼到 Figma 繼續精修</td><td>需要設計師接手或做品牌細節</td></tr>
+        <tr><td>HTML / CSS</td><td>取得靜態前端程式碼</td><td>要切成網頁、Landing Page、Theme</td></tr>
+        <tr><td>ZIP Package</td><td>打包程式碼與素材</td><td>交給 Antigravity 或工程師整理</td></tr>
+        <tr><td>Design Context</td><td>保存設計規則與畫面脈絡</td><td>讓 AI 開發工具更理解設計意圖</td></tr>
+      </table>
+      <div class="source">注意：功能名稱與可用項目可能因 Stitch 版本、模式與帳號權限而不同。</div>
+    </section>
+
+    <section class="slide">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>ZIP</div><div>06</div></div>
+      <div class="kicker">匯出 ZIP</div>
+      <h2>下載後先確認：它是「靜態前端」，不是 WordPress Theme</h2>
+      <div class="two-col">
+        <div class="card big"><h3>ZIP 可能包含</h3><ul><li>HTML / CSS / JS</li><li>圖片與素材 Assets</li><li>頁面元件或版型檔案</li><li>設計說明文件</li></ul></div>
+        <div class="card big"><h3>還缺什麼</h3><ul><li>style.css Theme Header</li><li>functions.php</li><li>header.php / footer.php</li><li>WordPress Loop</li><li>wp_head() / wp_footer()</li></ul></div>
+      </div>
+      <p class="footer-note">操作提醒：匯出後先不要急著丟到 WordPress，先用瀏覽器打開靜態版本，確認畫面、圖片路徑與 RWD 都正常。</p>
+    </section>
+
+    <section class="slide">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>Antigravity</div><div>07</div></div>
+      <div class="kicker">打開 Antigravity</div>
+      <h2>把 Antigravity 當成「會自己看專案、拆任務、改程式」的 AI 開發環境</h2>
+      <div class="three-col">
+        <div class="card big"><div class="num">01</div><h3>Open Folder</h3><p>開啟 Stitch 匯出的 ZIP 解壓縮資料夾。</p></div>
+        <div class="card big"><div class="num">02</div><h3>Ask Agent</h3><p>請 Agent 先閱讀專案結構，整理目前頁面與素材依賴。</p></div>
+        <div class="card big"><div class="num">03</div><h3>Define Mission</h3><p>明確要求轉換成 WordPress Theme，而不是單純修前端。</p></div>
+      </div>
+      <div class="code">Mission：請把這個 Stitch 匯出的靜態網頁，轉換成可安裝的 WordPress Theme。
+請建立必要檔案：style.css、functions.php、header.php、footer.php、front-page.php、index.php。</div>
+      <div class="source">資料來源：Google Antigravity 官方文件與 Codelab。</div>
+    </section>
+
+    <section class="slide">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>LocalWP</div><div>08</div></div>
+      <div class="kicker">安裝 LocalWP</div>
+      <h2>先建立安全的本機 WordPress 測試環境</h2>
+      <div class="flow">
+        <div class="step"><small>STEP 1</small><strong>下載 LocalWP</strong><span>安裝後建立新的 WordPress Site。</span></div><div class="arrow">→</div>
+        <div class="step"><small>STEP 2</small><strong>建立網站</strong><span>選擇站名、PHP、資料庫與管理帳號。</span></div><div class="arrow">→</div>
+        <div class="step"><small>STEP 3</small><strong>開啟 Theme 資料夾</strong><span>進入 wp-content/themes。</span></div><div class="arrow">→</div>
+        <div class="step"><small>STEP 4</small><strong>放入 Theme</strong><span>啟用、預覽、修正錯誤。</span></div>
+      </div>
+      <p class="footer-note">建議先建立一個乾淨測試站，避免直接在正式網站上測試 AI 轉換結果。</p>
+    </section>
+
+    <section class="slide">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>Theme Structure</div><div>09</div></div>
+      <div class="kicker">WordPress Theme 最小結構</div>
+      <h2>Antigravity 要轉換的不是「一頁 HTML」，而是一個 Theme 專案</h2>
+      <div class="code">my-stitch-theme/
+├── style.css          # Theme 資訊與主要樣式
+├── functions.php      # 載入 CSS / JS、Theme 支援功能
+├── header.php         # &lt;head&gt;、導覽列、wp_head()
+├── footer.php         # 頁尾、wp_footer()
+├── front-page.php     # 首頁版型
+├── index.php          # 預設備援模板
+└── assets/            # 圖片、CSS、JS、字體</div>
+      <div class="two-col">
+        <div class="card"><h3>靜態 → Theme</h3><p>拆出可重複使用的 header、footer、template。</p></div>
+        <div class="card"><h3>硬編 → WordPress</h3><p>把內容逐步替換成 WordPress 函式與後台可管理資料。</p></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>Convert</div><div>10</div></div>
+      <div class="kicker">使用 Antigravity 轉成 WordPress Theme</div>
+      <h2>給 Agent 的任務要「具體、可驗收、分階段」</h2>
+      <div class="code">請依序完成：
+1. 分析目前 HTML / CSS / assets 結構
+2. 建立 WordPress Theme 最小必要檔案
+3. 將原本頁面拆成 header.php、front-page.php、footer.php
+4. 用 wp_enqueue_style / wp_enqueue_script 載入素材
+5. 修正圖片路徑為 get_template_directory_uri()
+6. 確保 wp_head()、body_class()、wp_footer() 正確存在
+7. 最後提供啟用與測試步驟</div>
+    </section>
+
+    <section class="slide">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>Functions</div><div>11</div></div>
+      <div class="kicker">關鍵轉換片段</div>
+      <h2>讓樣式與腳本用 WordPress 方式載入</h2>
+      <div class="code">// functions.php
+function stitch_theme_assets() {
+  wp_enqueue_style(
+    'stitch-theme-style',
+    get_stylesheet_uri(),
+    array(),
+    wp_get_theme()-&gt;get('Version')
+  );
+
+  wp_enqueue_script(
+    'stitch-theme-main',
+    get_template_directory_uri() . '/assets/main.js',
+    array(),
+    wp_get_theme()-&gt;get('Version'),
+    true
+  );
+}
+add_action('wp_enqueue_scripts', 'stitch_theme_assets');</div>
+      <p class="footer-note">不要直接在 header.php 寫死 CSS/JS 路徑；用 enqueue 才符合 WordPress Theme 的標準做法。</p>
+    </section>
+
+    <section class="slide">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>WordPress Dynamic</div><div>12</div></div>
+      <div class="kicker">從靜態內容改成可管理內容</div>
+      <h2>初版可以先保留靜態，第二階段再導入 WordPress 動態化</h2>
+      <div class="three-col">
+        <div class="card big"><h3>階段 1</h3><p>完成可啟用 Theme，畫面與 Stitch 靜態版一致。</p></div>
+        <div class="card big"><h3>階段 2</h3><p>把標題、段落、按鈕連結改為 Customizer 或 ACF 欄位。</p></div>
+        <div class="card big"><h3>階段 3</h3><p>把重複區塊轉成 Gutenberg Block 或 Pattern。</p></div>
+      </div>
+      <div class="code">常見替換：
+&lt;h1&gt;固定標題&lt;/h1&gt; → &lt;?php the_title(); ?&gt;
+固定內文 → &lt;?php the_content(); ?&gt;
+圖片路徑 → &lt;?php echo esc_url(get_template_directory_uri()); ?&gt;/assets/image.png</div>
+    </section>
+
+    <section class="slide">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>Workflow</div><div>13</div></div>
+      <div class="kicker">完整工作流</div>
+      <h2>AI 設計不是終點，而是 WordPress 開發的起點</h2>
+      <div class="diagram">
+        <div class="line l1"></div><div class="line l2"></div><div class="line l3"></div><div class="line l4"></div>
+        <div class="node a"><h3>Google Stitch</h3><p>Prompt / 圖片生成 UI</p></div>
+        <div class="node b"><h3>Export ZIP</h3><p>取得靜態前端與素材</p></div>
+        <div class="node c"><h3>Antigravity</h3><p>拆解、重構、轉換 Theme</p></div>
+        <div class="node d"><h3>LocalWP</h3><p>本機安裝、啟用、測試</p></div>
+        <div class="node e"><h3>WordPress Theme</h3><p>可持續維護與擴充</p></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>QA</div><div>14</div></div>
+      <div class="kicker">驗收清單</div>
+      <h2>Theme 啟用前，至少檢查這 8 件事</h2>
+      <div class="two-col">
+        <ul>
+          <li>Theme 後台可以正常啟用</li>
+          <li>首頁畫面與靜態版一致</li>
+          <li>CSS / JS 沒有 404</li>
+          <li>圖片路徑都正確</li>
+        </ul>
+        <ul>
+          <li>手機版 RWD 沒有破版</li>
+          <li>wp_head() / wp_footer() 存在</li>
+          <li>選單、按鈕、表單可正常操作</li>
+          <li>沒有把測試 API Key 或私密資料放進 Theme</li>
+        </ul>
+      </div>
+      <p class="footer-note">Demo 時建議準備「失敗排除」橋段：常見錯誤包含圖片路徑、CSS 未載入、JS 相依性、PHP tag 拼錯。</p>
+    </section>
+
+    <section class="slide">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>Demo Script</div><div>15</div></div>
+      <div class="kicker">現場 Demo 建議節奏</div>
+      <h2>不要只展示工具，要展示「每一步產出的交付物」</h2>
+      <div class="flow">
+        <div class="step"><small>5 min</small><strong>Stitch 生成 UI</strong><span>從 Prompt 產出第一版畫面。</span></div><div class="arrow">→</div>
+        <div class="step"><small>5 min</small><strong>匯出 ZIP</strong><span>說明資料夾與檔案內容。</span></div><div class="arrow">→</div>
+        <div class="step"><small>15 min</small><strong>Antigravity 轉換</strong><span>讓 Agent 建 Theme 並修錯。</span></div><div class="arrow">→</div>
+        <div class="step"><small>10 min</small><strong>LocalWP 啟用</strong><span>完成測試與驗收。</span></div>
+      </div>
+      <p class="footer-note">時間不夠時，先準備好一份半成品 Theme，現場只展示關鍵轉換與修正。</p>
+    </section>
+
+    <section class="slide">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>Wrap-up</div><div>16</div></div>
+      <div class="kicker">重點總結</div>
+      <h2>這套流程的價值：更快做出可驗證的網站原型</h2>
+      <p class="quote">Stitch 負責把想法變成畫面；Antigravity 負責把畫面整理成工程；WordPress 負責讓網站可以被管理與持續營運。</p>
+      <div class="three-col">
+        <div class="card"><h3>速度</h3><p>降低從空白畫布開始的成本。</p></div>
+        <div class="card"><h3>可交付</h3><p>不是只有截圖，而是可測試的 Theme。</p></div>
+        <div class="card"><h3>可維護</h3><p>用 WordPress 結構接住後續內容與客戶需求。</p></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topbar"><div class="brandmark"><span class="dot"></span>Resources</div><div>17</div></div>
+      <div class="kicker">參考資源</div>
+      <h2>延伸閱讀與操作文件</h2>
+      <ul>
+        <li>RAR 設計攻略：Google Stitch 教學與功能整理</li>
+        <li>Google Developers Blog：From idea to app: Introducing Stitch</li>
+        <li>Google Blog：Introducing “vibe design” with Stitch</li>
+        <li>Google Antigravity 官方文件與 Getting Started Codelab</li>
+        <li>WordPress Theme Handbook：Theme Basics、Template Files、Enqueue Scripts</li>
+      </ul>
+      <div class="code">建議下一步：把此 HTML 投影片內容轉成 workshop handout，並補上實際操作截圖與你自己的 Demo 專案畫面。</div>
+    </section>
+  </main>
+  <div class="progress" id="progress"></div>
+  <div class="nav"><button id="prev" aria-label="上一頁">←</button><span id="count">1 / 17</span><button id="next" aria-label="下一頁">→</button></div>
+  <script>
+    const slides=[...document.querySelectorAll('.slide')];
+    let index=0;
+    const progress=document.getElementById('progress');
+    const count=document.getElementById('count');
+    function show(i){
+      index=Math.max(0,Math.min(slides.length-1,i));
+      slides.forEach((s,n)=>s.classList.toggle('active',n===index));
+      progress.style.width=((index+1)/slides.length*100)+'%';
+      count.textContent=(index+1)+' / '+slides.length;
+      location.hash='slide-'+(index+1);
+    }
+    document.getElementById('prev').onclick=()=>show(index-1);
+    document.getElementById('next').onclick=()=>show(index+1);
+    addEventListener('keydown',e=>{
+      if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();show(index+1)}
+      if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(index-1)}
+      if(e.key==='Home')show(0); if(e.key==='End')show(slides.length-1);
+    });
+    const m=location.hash.match(/slide-(\d+)/); if(m) index=Number(m[1])-1; show(index);
+  </script>
+</body>
+</html>

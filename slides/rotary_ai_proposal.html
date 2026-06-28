@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>扶輪社 AI 課程提案</title>
+  <style>
+    :root{
+      --navy:#071a33;
+      --blue:#0b3a6f;
+      --cyan:#18c8ff;
+      --orange:#ff8a2a;
+      --white:#f8fbff;
+      --muted:#b8c6d8;
+      --card:rgba(255,255,255,.09);
+      --card2:rgba(255,255,255,.14);
+      --line:rgba(255,255,255,.18);
+      --shadow:0 24px 80px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","Microsoft JhengHei",Arial,sans-serif;background:#020b17;color:var(--white);overflow:hidden}
+    body:before{content:"";position:fixed;inset:0;background:
+      radial-gradient(circle at 15% 18%, rgba(24,200,255,.22), transparent 30%),
+      radial-gradient(circle at 84% 75%, rgba(255,138,42,.2), transparent 32%),
+      linear-gradient(135deg,#061326 0%,#09274b 52%,#071a33 100%);z-index:-3}
+    body:after{content:"";position:fixed;inset:0;background-image:
+      linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);background-size:72px 72px;mask-image:radial-gradient(circle at center,black,transparent 82%);z-index:-2}
+    .deck{height:100vh;width:100vw;display:flex;align-items:center;justify-content:center;padding:2.1vh 2vw}
+    .slide{display:none;width:min(96vw,177.78vh);aspect-ratio:16/9;position:relative;padding:5.4% 6%;border:1px solid rgba(255,255,255,.16);border-radius:28px;background:linear-gradient(135deg,rgba(7,26,51,.92),rgba(9,39,75,.82));box-shadow:var(--shadow);overflow:hidden}
+    .slide.active{display:block;animation:fade .28s ease-out}
+    @keyframes fade{from{opacity:.2;transform:translateY(12px) scale(.992)}to{opacity:1;transform:none}}
+    .slide:before{content:"";position:absolute;inset:-40%;background:radial-gradient(circle,rgba(24,200,255,.08),transparent 34%);transform:rotate(-12deg);pointer-events:none}
+    .slide:after{content:"";position:absolute;right:-10%;top:-22%;width:50%;height:70%;border-radius:50%;background:radial-gradient(circle,rgba(255,138,42,.12),transparent 65%);pointer-events:none}
+    .content{position:relative;z-index:1;height:100%;display:flex;flex-direction:column}
+    .eyebrow{font-size:1.15vw;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);font-weight:700;margin-bottom:1.1rem}
+    h1{font-size:5.15vw;line-height:1.08;margin:.1rem 0 1.2rem;font-weight:900;letter-spacing:-.045em}
+    h2{font-size:3.25vw;line-height:1.15;margin:0 0 1.8rem;font-weight:850;letter-spacing:-.035em}
+    h3{font-size:1.55vw;margin:.25rem 0 .8rem;color:#fff;font-weight:800}
+    p{font-size:1.45vw;line-height:1.55;color:#dce8f7;margin:.45rem 0}
+    .lead{font-size:2.05vw;line-height:1.45;color:#eef7ff;max-width:82%}
+    .big{font-size:3.35vw;line-height:1.22;font-weight:900;letter-spacing:-.035em;margin:auto 0;color:#fff}
+    .accent{color:var(--orange)}
+    .cyan{color:var(--cyan)}
+    .grid{display:grid;gap:1.1rem;flex:1;align-content:center}
+    .grid.two{grid-template-columns:1fr 1fr}.grid.three{grid-template-columns:repeat(3,1fr)}.grid.four{grid-template-columns:repeat(4,1fr)}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:1.3rem 1.35rem;box-shadow:0 14px 40px rgba(0,0,0,.12);backdrop-filter:blur(10px)}
+    .card strong{display:block;font-size:1.45vw;margin-bottom:.55rem;color:#fff}.card p,.card li{font-size:1.16vw;line-height:1.45;color:#d9e6f5}
+    ul{margin:.2rem 0 0;padding-left:1.35rem}li{font-size:1.55vw;line-height:1.62;color:#e2ecf7;margin:.18rem 0}li::marker{color:var(--orange)}
+    ol{margin:.2rem 0 0;padding-left:1.55rem}ol li{font-size:1.32vw;line-height:1.58}
+    .split{display:grid;grid-template-columns:1fr .72fr;gap:2rem;align-items:center;flex:1}.split.equal{grid-template-columns:1fr 1fr}.split.wide{grid-template-columns:1.15fr .85fr}
+    .tagrow{display:flex;gap:.65rem;flex-wrap:wrap;margin-top:1.2rem}.tag{font-size:1.05vw;padding:.55rem .82rem;border-radius:999px;background:rgba(24,200,255,.12);border:1px solid rgba(24,200,255,.3);color:#dff7ff;font-weight:700}
+    .flow{display:flex;align-items:center;gap:.65rem;justify-content:center;flex-wrap:wrap;margin:auto 0}.node{min-width:8.5rem;text-align:center;padding:1rem 1.05rem;border-radius:18px;background:var(--card2);border:1px solid var(--line);font-weight:850;font-size:1.18vw}.arrow{font-size:1.8vw;color:var(--orange);font-weight:900}
+    .timeline{display:grid;gap:.72rem;margin-top:.5rem}.timeitem{display:grid;grid-template-columns:11.3rem 1fr;gap:1rem;align-items:center;padding:.82rem 1rem;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}.time{font-size:1.02vw;color:var(--cyan);font-weight:800}.topic{font-size:1.16vw;color:#fff;font-weight:750}
+    .table{width:100%;border-collapse:separate;border-spacing:0 .55rem}.table td{font-size:1.05vw;padding:.78rem .95rem;background:rgba(255,255,255,.08);border-top:1px solid rgba(255,255,255,.11);border-bottom:1px solid rgba(255,255,255,.11)}.table td:first-child{border-left:1px solid rgba(255,255,255,.11);border-radius:14px 0 0 14px;color:var(--cyan);font-weight:800;width:30%}.table td:last-child{border-right:1px solid rgba(255,255,255,.11);border-radius:0 14px 14px 0;color:#e7f0fb}
+    .visual{position:relative;height:100%;min-height:18rem;border-radius:28px;background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.035));border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;overflow:hidden}.visual .circle{position:absolute;border-radius:50%;border:1px solid rgba(24,200,255,.25)}.c1{width:80%;height:80%}.c2{width:58%;height:58%}.c3{width:34%;height:34%;background:rgba(24,200,255,.12)}.iconbig{font-size:6vw;filter:drop-shadow(0 10px 30px rgba(24,200,255,.25))}
+    .footer{position:absolute;left:6%;right:6%;bottom:3.4%;display:flex;align-items:center;justify-content:space-between;color:#9eb2c9;font-size:.95vw}.page{font-weight:800;color:#cfe4ff}.progress{position:fixed;left:0;top:0;height:5px;background:linear-gradient(90deg,var(--cyan),var(--orange));width:0%;z-index:10;transition:width .25s ease}.hint{position:fixed;right:1.1rem;bottom:1rem;color:rgba(255,255,255,.42);font-size:.82rem;z-index:11}
+    .kicker{font-size:1.05vw;color:#99acc5;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.quote{border-left:5px solid var(--orange);padding-left:1.3rem;margin-top:1rem;font-size:1.85vw;color:#fff;font-weight:800;line-height:1.4}.center{justify-content:center;text-align:center;align-items:center}.center .lead{margin-left:auto;margin-right:auto}.cards-tight{gap:.8rem}.cards-tight .card{padding:1.05rem}.mini{font-size:1vw!important;color:#bcd0e5!important}.logoish{position:absolute;right:6%;top:6%;font-weight:900;color:rgba(255,255,255,.28);letter-spacing:.18em}.steps{counter-reset:step}.step{position:relative;padding-left:3.7rem}.step:before{counter-increment:step;content:counter(step);position:absolute;left:1rem;top:1rem;width:2rem;height:2rem;border-radius:50%;display:grid;place-items:center;background:var(--orange);color:#071a33;font-weight:900}
+    @media (max-width:900px){h1{font-size:8vw}h2{font-size:5.8vw}.lead,p,li{font-size:2.6vw}.card strong{font-size:2.4vw}.card p,.card li,.node,.topic,.time,.table td{font-size:2vw}.grid.four{grid-template-columns:1fr 1fr}.grid.three{grid-template-columns:1fr}.split,.split.equal,.split.wide{grid-template-columns:1fr}.slide{padding:7%}.visual{display:none}}
+    @media print{html,body{height:auto;overflow:visible;background:white}.deck{display:block;height:auto;padding:0}.slide{display:block!important;page-break-after:always;width:100vw;height:56.25vw;border-radius:0;box-shadow:none}.progress,.hint{display:none}}
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="hint">← → / Space 切換</div>
+  <main class="deck" id="deck">
+
+    <section class="slide active"><div class="content center"><div class="logoish">ROTARY × AI</div><div class="eyebrow">Proposal Deck</div><h1>扶輪社 AI 課程提案</h1><p class="lead">從社務效率到產業 AI 應用</p><div class="tagrow" style="justify-content:center"><span class="tag">Google Workspace</span><span class="tag">n8n</span><span class="tag">AI Agent</span><span class="tag">社群經營</span></div></div><footer class="footer"><span>扶輪社 AI 課程提案</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">Why Now</div><h2>提案緣起：為什麼現在需要 AI？</h2><div class="split wide"><div><ul><li>AI 已經從聊天工具，進入日常工作流程</li><li>扶輪社有大量社務、活動、公益與溝通需求</li><li>社員來自不同產業，應用場景非常豐富</li><li>現在導入 AI，可以提升社團效率與影響力</li></ul></div><div class="visual"><div class="circle c1"></div><div class="circle c2"></div><div class="circle c3"></div><div class="iconbig">⚙️→🤖</div></div></div></div><footer class="footer"><span>現在的工作方式 → AI 協作方式</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">Rotary Fit</div><h2>扶輪社最適合 AI 的原因</h2><div class="grid two"><div class="card"><strong>固定流程多</strong><p>例會、活動、公益專案、會員經營，都能被整理成流程。</p></div><div class="card"><strong>產業背景多元</strong><p>社員來自各產業，能延伸出跨產業 AI 應用案例。</p></div><div class="card"><strong>重視服務與連結</strong><p>AI 減少行政負擔，把時間留給人與人的互動。</p></div><div class="card"><strong>社務與本業雙效益</strong><p>同時提升社團效率與社員本業競爭力。</p></div></div></div><footer class="footer"><span>社務 × 產業 × 服務</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">Positioning</div><h2>課程定位</h2><p class="big">這不是單純教 <span class="accent">ChatGPT</span>，而是教社員設計自己的 <span class="cyan">AI 工作流程</span>。</p><div class="grid three"><div class="card"><strong>社務效率提升</strong><p>會議、通知、文書、社群內容更快完成。</p></div><div class="card"><strong>公益成果整理</strong><p>把活動資料轉成成果報告、新聞稿與簡報。</p></div><div class="card"><strong>產業應用導入</strong><p>讓社員把 AI 帶回自己的本業流程。</p></div></div></div><footer class="footer"><span>從工作場景出發，而不是從工具出發</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">Framework</div><h2>課程核心概念</h2><div class="grid four"><div class="card"><strong>AI 文書力</strong><p>寫信、企劃、貼文、新聞稿、簡報、會議紀錄</p></div><div class="card"><strong>Google 協作力</strong><p>Docs、Sheets、Forms、Slides、Drive、Gmail、Calendar</p></div><div class="card"><strong>n8n 自動化力</strong><p>表單、通知、提醒、摘要、紀錄、人工審核</p></div><div class="card"><strong>AI Agent 延伸力</strong><p>Codex / Claude Code 協助產生小工具與 Apps Script</p></div></div></div><footer class="footer"><span>四層能力，從入門到進階</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">Start Small</div><h2>可以先從社務場景開始</h2><div class="split"><div><h3>從社團最熟悉的工作開始導入</h3><ul><li>例會邀請與提醒</li><li>會議紀錄摘要</li><li>活動報名與通知</li><li>公益成果報告</li><li>社群貼文與新聞稿</li><li>社員生日與關懷訊息</li></ul></div><div class="card"><strong>為什麼適合入門？</strong><p>這些工作原本就會發生，流程清楚、成果容易驗證，也能讓社員快速感受到 AI 的實用性。</p></div></div></div><footer class="footer"><span>先解決社團日常，再延伸到產業應用</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">From Club to Business</div><h2>再延伸到社員自己的產業</h2><div class="grid two"><div class="card"><strong>社務 AI</strong><ul><li>例會提醒</li><li>會議紀錄</li><li>活動報名</li><li>公益成果報告</li><li>社群貼文</li></ul></div><div class="card"><strong>產業 AI</strong><ul><li>客戶回覆、報價與提案</li><li>預約與提醒、客戶關懷</li><li>滿意度分析、文件整理</li><li>業務追蹤、社群經營</li></ul></div></div><div class="quote">讓每位社員把 AI 帶回自己的本業。</div></div><footer class="footer"><span>社團學習 → 本業應用</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">Method</div><h2>課程設計方法</h2><p class="big">找出重複工作 → 設計 AI 助理 → 串接自動化</p><div class="flow"><span class="node">產業痛點</span><span class="arrow">→</span><span class="node">AI 助理</span><span class="arrow">→</span><span class="node">Google 資料流</span><span class="arrow">→</span><span class="node">n8n 自動化</span><span class="arrow">→</span><span class="node">人工審核</span><span class="arrow">→</span><span class="node">實際導入</span></div><p class="lead">不只是學會問 AI，而是學會設計可重複使用的 AI 工作方式。</p></div><footer class="footer"><span>從流程設計開始</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">Google Workspace</div><h2>Google 服務在課程中的角色</h2><div class="grid four cards-tight"><div class="card"><strong>Docs</strong><p>企劃書、SOP、新聞稿、會議紀錄</p></div><div class="card"><strong>Sheets</strong><p>客戶名單、活動報名、案件追蹤、統計分析</p></div><div class="card"><strong>Forms</strong><p>報名、預約、需求調查、滿意度問卷</p></div><div class="card"><strong>Slides</strong><p>活動提案、成果報告、年度簡報</p></div><div class="card"><strong>Gmail</strong><p>客戶回覆、提醒信、感謝信</p></div><div class="card"><strong>Calendar</strong><p>例會、預約、回訪、交期提醒</p></div><div class="card"><strong>Drive</strong><p>文件歸檔、活動照片、專案資料</p></div><div class="card"><strong>NotebookLM</strong><p>知識庫、產品手冊、SOP 問答</p></div></div></div><footer class="footer"><span>使用大家已經熟悉的工具落地</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">Automation</div><h2>n8n 自動化可以做到什麼？</h2><div class="flow"><span class="node">Trigger 觸發</span><span class="arrow">→</span><span class="node">讀取資料</span><span class="arrow">→</span><span class="node">AI 產生內容</span><span class="arrow">→</span><span class="node">條件判斷</span><span class="arrow">→</span><span class="node">通知 / 更新</span><span class="arrow">→</span><span class="node">留存紀錄</span></div><div class="grid three"><div class="card"><strong>社務通知</strong><p>活動報名確認、例會前一天提醒、生日關懷。</p></div><div class="card"><strong>內容產出</strong><p>會議摘要、活動新聞稿、社群貼文。</p></div><div class="card"><strong>資料整理</strong><p>滿意度問卷整理、活動成果統計、追蹤紀錄。</p></div></div></div><footer class="footer"><span>把重複流程變成自動化</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">AI Agent</div><h2>AI Agent / Codex / Claude Code 的角色</h2><div class="split wide"><div><ul><li>產生 Google Apps Script</li><li>製作簡單活動網頁</li><li>產生 WordPress shortcode 或 CSS</li><li>協助串接 API</li><li>建立報名表小工具</li><li>修正自動化流程中的程式問題</li></ul></div><div class="card"><strong>適合對象</strong><p>進階學員、資訊主委、網站管理者，或想做內部工具的企業主。</p><div class="tagrow"><span class="tag">Apps Script</span><span class="tag">WordPress</span><span class="tag">API</span><span class="tag">小工具</span></div></div></div></div><footer class="footer"><span>進階應用：讓 AI 協助產生小工具</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">Three Stages</div><h2>三階段課程提案總覽</h2><div class="grid three"><div class="card step"><strong>2 小時演講版</strong><p>適合例會邀請，重點是觀念導入與案例展示。</p></div><div class="card step"><strong>3 小時工作坊版</strong><p>適合半日課程，讓社員實際產出 Prompt、表單與流程圖。</p></div><div class="card step"><strong>6 小時進階實作版</strong><p>適合幹部訓練或深度導入，重點是 Google、n8n 與 AI Agent 實作。</p></div></div></div><footer class="footer"><span>依照社團需求，彈性選擇課程深度</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">Stage 1</div><h2>第一階段：2 小時演講版</h2><div class="split equal"><div class="card"><strong>適合情境</strong><ul><li>例會專題演講</li><li>第一次接觸 AI 的社員</li><li>想先了解 AI 應用價值的社團</li></ul></div><div class="card"><strong>課程內容</strong><ol><li>AI 現在可以做什麼</li><li>扶輪社常見工作痛點</li><li>社務與產業應用案例</li><li>Prompt 基礎示範</li><li>Google Workspace 應用展示</li><li>Q&A</li></ol></div></div><p class="quote">預期成果：讓社員知道 AI 能如何用在社務、活動、公益與自己的本業。</p></div><footer class="footer"><span>AI 如何幫助扶輪社提升效率與影響力</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">Stage 2</div><h2>第二階段：3 小時工作坊版</h2><div class="split wide"><div><div class="timeline"><div class="timeitem"><span class="time">00:00–00:20</span><span class="topic">AI 如何改變各產業工作流</span></div><div class="timeitem"><span class="time">00:20–00:50</span><span class="topic">設計自己的產業 AI 助理</span></div><div class="timeitem"><span class="time">00:50–01:30</span><span class="topic">Google Docs / Sheets / Forms 實作</span></div><div class="timeitem"><span class="time">01:30–02:10</span><span class="topic">產業自動化流程設計</span></div><div class="timeitem"><span class="time">02:10–02:40</span><span class="topic">n8n 示範：表單到通知</span></div><div class="timeitem"><span class="time">02:40–03:00</span><span class="topic">分組分享與 Q&A</span></div></div></div><div class="card"><strong>預期成果</strong><ul><li>AI 助理 Prompt</li><li>Google 表單或表格設計</li><li>自動化流程圖</li><li>初步 AI 導入藍圖</li></ul></div></div></div><footer class="footer"><span>扶輪社 AI 實戰工作坊</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">Stage 3</div><h2>第三階段：6 小時進階實作版</h2><div class="split wide"><div><div class="timeline"><div class="timeitem"><span class="time">09:30–10:00</span><span class="topic">AI 趨勢與產業案例</span></div><div class="timeitem"><span class="time">10:00–10:40</span><span class="topic">產業痛點盤點</span></div><div class="timeitem"><span class="time">10:40–11:20</span><span class="topic">Prompt 設計：產業 AI 助理</span></div><div class="timeitem"><span class="time">11:20–12:00</span><span class="topic">Google Workspace 實作</span></div><div class="timeitem"><span class="time">13:00–13:40</span><span class="topic">Forms + Sheets 建立資料流程</span></div><div class="timeitem"><span class="time">13:40–14:40</span><span class="topic">n8n 自動化實作</span></div><div class="timeitem"><span class="time">14:40–15:20</span><span class="topic">Codex / Claude Code 小工具示範</span></div><div class="timeitem"><span class="time">15:20–16:00</span><span class="topic">分組產出與分享</span></div></div></div><div class="card"><strong>適合情境</strong><ul><li>幹部訓練</li><li>資訊主委或社務團隊</li><li>實際導入自動化流程</li><li>企業主產業流程應用</li></ul><p class="mini">預期成果：完成一套可落地的 AI 自動化流程設計。</p></div></div></div><footer class="footer"><span>扶輪社 AI 自動化實作營</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">Value</div><h2>課程可以帶來的價值</h2><div class="grid two"><div class="card"><strong>對扶輪社</strong><ul><li>降低社務行政負擔</li><li>提升活動與公益專案整理效率</li><li>強化社群宣傳與對外溝通</li><li>讓幹部交接更有系統</li></ul></div><div class="card"><strong>對社員</strong><ul><li>學會把 AI 用在自己的產業</li><li>找出可自動化的工作流程</li><li>提升文書、溝通與資料整理效率</li><li>形成自己的 AI 導入藍圖</li></ul></div></div></div><footer class="footer"><span>社團與社員的雙重價值</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">Speaker Advantage</div><h2>講師特色與執行優勢</h2><div class="split"><div><ul><li>長期參與 WordPress、Laravel、Chatbot.tw 等技術社群</li><li>熟悉網站建置、社群經營、活動營運與自動化工具</li><li>有實際規劃活動、課程與網站系統的經驗</li><li>能把 AI 從概念轉成實際工作流程</li><li>課程不只教工具，而是協助社員設計產業應用</li></ul></div><div class="card"><strong>社群 × 網站 × 自動化 × AI</strong><p>以技術社群經驗為基礎，把抽象 AI 概念轉成可理解、可操作、可導入的實務課程。</p><div class="tagrow"><span class="tag">WordPress</span><span class="tag">Laravel</span><span class="tag">Chatbot.tw</span><span class="tag">Automation</span></div></div></div></div><footer class="footer"><span>從概念到流程落地</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">Execution</div><h2>建議執行方式</h2><p class="lead">建議從輕量導入開始，降低第一次推動門檻。</p><div class="flow"><span class="node">2 小時例會演講</span><span class="arrow">→</span><span class="node">收集產業場景</span><span class="arrow">→</span><span class="node">3 小時工作坊</span><span class="arrow">→</span><span class="node">6 小時進階營</span></div><div class="card"><strong>執行策略</strong><p>先用演講建立共識，再依照社員感興趣的產業與應用場景，調整後續課程深度。</p></div></div><footer class="footer"><span>建議路線：先試行，再深化</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content"><div class="eyebrow">Outcome</div><h2>預期課程成果</h2><p class="big">每位社員下課可以帶走：</p><div class="grid five"></div><div class="grid three"><div class="card"><strong>1. 產業痛點清單</strong></div><div class="card"><strong>2. AI 助理 Prompt</strong></div><div class="card"><strong>3. Google 表單 / 表格設計</strong></div><div class="card"><strong>4. 自動化流程圖</strong></div><div class="card"><strong>5. AI 導入藍圖</strong></div><div class="card"><strong>社團模板</strong><p>也能累積成一套扶輪社社務 AI 應用模板。</p></div></div></div><footer class="footer"><span>從個人學習到社團資產</span><span class="page"></span></footer></section>
+
+    <section class="slide"><div class="content center"><div class="eyebrow">Next Step</div><h2>讓 AI 成為扶輪社與社員產業的助理</h2><p class="lead">從社務效率開始，延伸到公益活動、企業流程、客戶服務與產業升級。</p><p class="quote" style="max-width:80%;text-align:left">AI 的重點不是取代人，而是讓人把時間留給更有價值的連結、判斷與服務。</p><div class="card" style="margin-top:2rem;max-width:70%"><strong>建議先以 2 小時例會專題演講作為第一階段試行。</strong></div></div><footer class="footer"><span>Proposal End</span><span class="page"></span></footer></section>
+
+  </main>
+  <script>
+    const slides=[...document.querySelectorAll('.slide')];
+    const progress=document.getElementById('progress');
+    let index=0;
+    function update(){
+      slides.forEach((s,i)=>{s.classList.toggle('active',i===index);const p=s.querySelector('.page');if(p)p.textContent=`${i+1} / ${slides.length}`});
+      progress.style.width=`${((index+1)/slides.length)*100}%`;
+      document.title=`${index+1}/${slides.length} 扶輪社 AI 課程提案`;
+    }
+    function next(){index=Math.min(slides.length-1,index+1);update()}
+    function prev(){index=Math.max(0,index-1);update()}
+    document.addEventListener('keydown',e=>{
+      if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();next()}
+      if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev()}
+      if(e.key==='Home'){index=0;update()}
+      if(e.key==='End'){index=slides.length-1;update()}
+    });
+    document.addEventListener('click',e=>{ if(e.shiftKey) prev(); else next(); });
+    update();
+  </script>
+</body>
+</html>

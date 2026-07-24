@@ -312,6 +312,15 @@
       z-index: 2;
     }
 
+    .four-col {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px;
+      margin-top: 34px;
+      position: relative;
+      z-index: 2;
+    }
+
     .card {
       background: var(--card);
       border: 1px solid var(--line);
@@ -322,6 +331,16 @@
 
     .card.big {
       min-height: 260px;
+    }
+
+    .four-col .card.big {
+      min-height: 295px;
+      padding: 26px;
+    }
+
+    .four-col .card p {
+      font-size: 19px;
+      line-height: 1.42;
     }
 
     .card .num {
@@ -850,95 +869,6 @@
       margin-top: 12px
     }
 
-    .cat-mark {
-      width: 58px;
-      height: 46px;
-      position: relative;
-      display: inline-block;
-      flex: 0 0 auto
-    }
-
-    .cat-mark:before,
-    .cat-mark:after {
-      content: "";
-      position: absolute;
-    }
-
-    .cat-mark:before {
-      left: 3px;
-      bottom: 2px;
-      width: 38px;
-      height: 28px;
-      border-radius: 58% 42% 48% 52%;
-      background:
-        linear-gradient(105deg, transparent 24%, rgba(122, 54, 0, .35) 25% 30%, transparent 31%),
-        linear-gradient(78deg, transparent 42%, rgba(122, 54, 0, .28) 43% 48%, transparent 49%),
-        linear-gradient(135deg, #ffba55 0%, #f97316 72%);
-      box-shadow: inset -5px -5px 0 rgba(128, 49, 0, .16)
-    }
-
-    .cat-mark:after {
-      right: 0;
-      bottom: 15px;
-      width: 24px;
-      height: 24px;
-      border-top: 7px solid #f97316;
-      border-right: 7px solid #f97316;
-      border-radius: 0 18px 0 0;
-      transform: rotate(-18deg)
-    }
-
-    .cat-face {
-      position: absolute;
-      left: 24px;
-      top: 5px;
-      width: 27px;
-      height: 24px;
-      border-radius: 48% 48% 45% 45%;
-      background:
-        radial-gradient(circle at 36% 48%, #26130b 0 1.6px, transparent 1.9px),
-        radial-gradient(circle at 66% 48%, #26130b 0 1.6px, transparent 1.9px),
-        radial-gradient(circle at 51% 62%, #7a3100 0 1.7px, transparent 2px),
-        linear-gradient(105deg, transparent 16%, rgba(122, 54, 0, .32) 17% 22%, transparent 23%),
-        linear-gradient(80deg, transparent 74%, rgba(122, 54, 0, .28) 75% 80%, transparent 81%),
-        linear-gradient(135deg, #ffc46a 0%, #fb7f1d 80%);
-      box-shadow: inset -3px -4px 0 rgba(128, 49, 0, .14);
-      z-index: 2
-    }
-
-    .cat-face:before,
-    .cat-face:after {
-      content: "";
-      position: absolute;
-      top: -8px;
-      width: 13px;
-      height: 14px;
-      background: linear-gradient(135deg, #ffc46a, #f97316);
-      clip-path: polygon(50% 0, 100% 100%, 0 100%);
-      border-radius: 3px 3px 0 0
-    }
-
-    .cat-face:before {
-      left: 2px;
-      transform: rotate(-18deg)
-    }
-
-    .cat-face:after {
-      right: 2px;
-      transform: rotate(18deg)
-    }
-
-    .cat-tail {
-      position: absolute;
-      left: 10px;
-      bottom: 0;
-      width: 28px;
-      height: 5px;
-      border-radius: 999px;
-      background: rgba(122, 54, 0, .28);
-      z-index: 3
-    }
-
     .qa-slide-grid {
       display: grid;
       grid-template-columns: 1fr 430px;
@@ -1044,6 +974,7 @@
       .hero-grid,
       .two-col,
       .three-col,
+      .four-col,
       .compare {
         grid-template-columns: 1fr
       }
@@ -1226,7 +1157,7 @@
           <div class="mission-box">
             <strong>我喜歡把新工具玩到真的可以上線。</strong>
             <span>平常在寫程式、辦小聚，還有研究怎麼讓 AI 幫我少加一點班。</span>
-            <div class="profile-footer"><span>@supergud</span><span class="cat-mark" aria-label="橘貓彩蛋"><span class="cat-face"></span><span class="cat-tail"></span></span></div>
+            <div class="profile-footer"><span>@supergud</span></div>
           </div>
         </div>
       </div>
@@ -1464,24 +1395,29 @@
       </div>
       <div class="kicker">認識 Antigravity</div>
       <h2>Google Antigravity：Agentic IDE 的指揮中心</h2>
-      <div class="three-col">
+      <div class="four-col">
         <div class="card big">
           <div class="num">01</div>
           <h3>指揮官模式</h3>
-          <p>用自然語言指派多個 Agents，在不同 Workspace 並行規劃、編碼、安裝套件與測試。</p>
+          <p>開發者像指揮官，用自然語言派多個 Agents 在不同 Workspace 背景並行。</p>
         </div>
         <div class="card big">
           <div class="num">02</div>
           <h3>Artifacts 回饋</h3>
-          <p>代理會產出任務清單、程式碼變動與截圖；你可以像文件批註一樣直接留言修正。</p>
+          <p>產出任務清單、程式碼變動與截圖；可在成果上反白留言，讓代理吸收修正。</p>
         </div>
         <div class="card big">
           <div class="num">03</div>
           <h3>瀏覽器自測</h3>
-          <p>內建瀏覽器自動化，能點擊、填表、看 Console Logs，並回頭修正前端錯誤。</p>
+          <p>能打開 Chrome、點擊、填表、檢查 Console Logs，並自主回頭修復錯誤。</p>
+        </div>
+        <div class="card big">
+          <div class="num">04</div>
+          <h3>模型多元支援</h3>
+          <p>採模型無關架構，可依任務切換 Gemini、Claude 等模型處理不同開發情境。</p>
         </div>
       </div>
-      <div class="mission-box">適合快速做 MVP、後台原型與既有專案整理；但金流、醫療、資安等高風險專案，AI 產出的程式碼一定要由專業工程師驗收。</div>
+      <div class="mission-box">適合新手用 Vibe Coding 做網頁原型，也適合工程師把環境建置、套件安裝與基礎架構交給 AI；但金流、醫療、資安等高風險專案一定要由專業工程師驗收。</div>
     </section>
 
 

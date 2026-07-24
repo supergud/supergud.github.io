@@ -661,6 +661,28 @@
       transform: rotate(-12deg)
     }
 
+    .workflow-chain {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px;
+      margin-top: 52px;
+      position: relative;
+      z-index: 2
+    }
+
+    .workflow-chain .step {
+      min-height: 285px
+    }
+
+    .workflow-chain .step strong {
+      font-size: 30px
+    }
+
+    .workflow-chain .step span {
+      font-size: 20px;
+      line-height: 1.42
+    }
+
     .quote {
       font-size: 42px;
       line-height: 1.25;
@@ -747,6 +769,176 @@
       color: #fff
     }
 
+    .profile-subtitle {
+      font-size: 31px;
+      line-height: 1.35;
+      color: #dce6f7;
+      margin-top: 14px;
+      font-weight: 700
+    }
+
+    .mission-box strong {
+      display: block;
+      color: var(--accent);
+      font-size: 26px;
+      margin-bottom: 10px
+    }
+
+    .mission-box span {
+      display: block
+    }
+
+    .profile-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 16px;
+      margin-top: 18px;
+      color: var(--brand2);
+      font-weight: 900
+    }
+
+    .profile-slide {
+      padding-bottom: 52px
+    }
+
+    .profile-slide .profile-slide-grid {
+      grid-template-columns: 420px minmax(0, 1fr);
+      gap: 44px;
+      align-items: start;
+      margin-top: 30px
+    }
+
+    .profile-slide .profile-photo {
+      width: 400px;
+      height: 400px
+    }
+
+    .profile-slide .card.big {
+      min-height: 0;
+      padding: 26px 30px
+    }
+
+    .profile-slide .profile-list {
+      gap: 0
+    }
+
+    .profile-slide .profile-item {
+      grid-template-columns: 120px 1fr;
+      gap: 28px;
+      padding: 13px 0
+    }
+
+    .profile-slide .profile-value {
+      font-size: 21px;
+      line-height: 1.42
+    }
+
+    .profile-slide .mission-box {
+      margin-top: 18px;
+      padding: 18px 24px;
+      font-size: 21px;
+      line-height: 1.4
+    }
+
+    .profile-slide .mission-box strong {
+      font-size: 23px;
+      margin-bottom: 8px
+    }
+
+    .profile-slide .profile-footer {
+      margin-top: 12px
+    }
+
+    .cat-mark {
+      width: 58px;
+      height: 46px;
+      position: relative;
+      display: inline-block;
+      flex: 0 0 auto
+    }
+
+    .cat-mark:before,
+    .cat-mark:after {
+      content: "";
+      position: absolute;
+    }
+
+    .cat-mark:before {
+      left: 3px;
+      bottom: 2px;
+      width: 38px;
+      height: 28px;
+      border-radius: 58% 42% 48% 52%;
+      background:
+        linear-gradient(105deg, transparent 24%, rgba(122, 54, 0, .35) 25% 30%, transparent 31%),
+        linear-gradient(78deg, transparent 42%, rgba(122, 54, 0, .28) 43% 48%, transparent 49%),
+        linear-gradient(135deg, #ffba55 0%, #f97316 72%);
+      box-shadow: inset -5px -5px 0 rgba(128, 49, 0, .16)
+    }
+
+    .cat-mark:after {
+      right: 0;
+      bottom: 15px;
+      width: 24px;
+      height: 24px;
+      border-top: 7px solid #f97316;
+      border-right: 7px solid #f97316;
+      border-radius: 0 18px 0 0;
+      transform: rotate(-18deg)
+    }
+
+    .cat-face {
+      position: absolute;
+      left: 24px;
+      top: 5px;
+      width: 27px;
+      height: 24px;
+      border-radius: 48% 48% 45% 45%;
+      background:
+        radial-gradient(circle at 36% 48%, #26130b 0 1.6px, transparent 1.9px),
+        radial-gradient(circle at 66% 48%, #26130b 0 1.6px, transparent 1.9px),
+        radial-gradient(circle at 51% 62%, #7a3100 0 1.7px, transparent 2px),
+        linear-gradient(105deg, transparent 16%, rgba(122, 54, 0, .32) 17% 22%, transparent 23%),
+        linear-gradient(80deg, transparent 74%, rgba(122, 54, 0, .28) 75% 80%, transparent 81%),
+        linear-gradient(135deg, #ffc46a 0%, #fb7f1d 80%);
+      box-shadow: inset -3px -4px 0 rgba(128, 49, 0, .14);
+      z-index: 2
+    }
+
+    .cat-face:before,
+    .cat-face:after {
+      content: "";
+      position: absolute;
+      top: -8px;
+      width: 13px;
+      height: 14px;
+      background: linear-gradient(135deg, #ffc46a, #f97316);
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      border-radius: 3px 3px 0 0
+    }
+
+    .cat-face:before {
+      left: 2px;
+      transform: rotate(-18deg)
+    }
+
+    .cat-face:after {
+      right: 2px;
+      transform: rotate(18deg)
+    }
+
+    .cat-tail {
+      position: absolute;
+      left: 10px;
+      bottom: 0;
+      width: 28px;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(122, 54, 0, .28);
+      z-index: 3
+    }
+
     .qa-slide-grid {
       display: grid;
       grid-template-columns: 1fr 430px;
@@ -802,7 +994,20 @@
         height: auto
       }
 
+      .profile-slide .profile-slide-grid {
+        grid-template-columns: 1fr
+      }
+
+      .profile-slide .profile-photo {
+        width: 100%;
+        height: auto
+      }
+
       .profile-item {
+        grid-template-columns: 1fr
+      }
+
+      .profile-slide .profile-item {
         grid-template-columns: 1fr
       }
 
@@ -861,6 +1066,10 @@
 
       .flow {
         flex-direction: column
+      }
+
+      .workflow-chain {
+        grid-template-columns: 1fr
       }
 
       .arrow {
@@ -977,13 +1186,22 @@
     </section>
 
 
-    <section class="slide">
+
+
+
+
+
+
+
+
+    <section class="slide profile-slide">
       <div class="topbar">
         <div class="brandmark"><span class="dot"></span>Speaker</div>
         <div>01</div>
       </div>
       <div class="kicker">個人介紹</div>
-      <h2>系統架構師：Bruce Lee</h2>
+      <h2>Bruce Lee 李冠緯</h2>
+      <p class="profile-subtitle">網站開發 × WordPress 社群 × AI 自動化</p>
       <div class="profile-slide-grid">
         <div class="profile-photo-wrap">
           <img class="profile-photo"
@@ -993,22 +1211,34 @@
         <div class="card big">
           <div class="profile-list">
             <div class="profile-item">
-              <div class="profile-label">FOCUS</div>
-              <div class="profile-value">WordPress、網站架構與數位服務應用。</div>
+              <div class="profile-label">13+ 年</div>
+              <div class="profile-value">哈拉設計創辦人，13+ 年網站開發與自由接案經驗，熟悉 WordPress、Laravel、前後端開發與伺服器維運。</div>
             </div>
             <div class="profile-item">
-              <div class="profile-label">COMMUNITY</div>
-              <div class="profile-value">WordCamp Asia、WordCamp Taiwan、WordCamp Taipei 等主辦者與講者。</div>
+              <div class="profile-label">社群</div>
+              <div class="profile-value">WordPress 社群參與者與活動組織者，參與 WordPress Taipei Meetup、WordCamp Taiwan／Asia、WP Campus Connect。</div>
             </div>
             <div class="profile-item">
-              <div class="profile-label">MISSION</div>
-              <div class="profile-value">把複雜的技術拆解成一般人也能上手的實戰流程。</div>
+              <div class="profile-label">AI</div>
+              <div class="profile-value">正在研究如何把 AI 生成的設計，變成真正能安裝、維護和上線的 WordPress 網站。</div>
             </div>
           </div>
-          <div class="mission-box">持續研究如何讓「不會寫程式的人」，也能透過 AI 輔助，將想法快速轉化為真正上線的產品。</div>
+          <div class="mission-box">
+            <strong>我喜歡把新工具玩到真的可以上線。</strong>
+            <span>平常在寫程式、辦小聚，還有研究怎麼讓 AI 幫我少加一點班。</span>
+            <div class="profile-footer"><span>@supergud</span><span class="cat-mark" aria-label="橘貓彩蛋"><span class="cat-face"></span><span class="cat-tail"></span></span></div>
+          </div>
         </div>
       </div>
     </section>
+
+
+
+
+
+
+
+
 
     <section class="slide">
       <div class="topbar">
@@ -1029,6 +1259,14 @@
       </div>
       <div class="source">提示：使用鍵盤 ← → 或下方按鈕切換投影片；列印時可另存為 PDF。</div>
     </section>
+
+
+
+
+
+
+
+
 
     <section class="slide">
       <div class="topbar">
@@ -1054,6 +1292,14 @@
         <li>可透過對話修改版面、色彩、元件與頁面結構。</li>
       </ul>
     </section>
+
+
+
+
+
+
+
+
 
     <section class="slide">
       <div class="topbar">
@@ -1086,6 +1332,14 @@
       </div>
     </section>
 
+
+
+
+
+
+
+
+
     <section class="slide">
       <div class="topbar">
         <div class="brandmark"><span class="dot"></span>Prompt</div>
@@ -1113,6 +1367,14 @@
         </div>
       </div>
     </section>
+
+
+
+
+
+
+
+
 
     <section class="slide">
       <div class="topbar">
@@ -1151,6 +1413,14 @@
       <div class="source">注意：功能名稱與可用項目可能因 Stitch 版本、模式與帳號權限而不同。</div>
     </section>
 
+
+
+
+
+
+
+
+
     <section class="slide">
       <div class="topbar">
         <div class="brandmark"><span class="dot"></span>ZIP</div>
@@ -1182,6 +1452,46 @@
       <p class="footer-note">操作提醒：匯出後先不要急著丟到 WordPress，先用瀏覽器打開靜態版本，確認畫面、圖片路徑與 RWD 都正常。</p>
     </section>
 
+
+
+
+
+
+    <section class="slide">
+      <div class="topbar">
+        <div class="brandmark"><span class="dot"></span>Antigravity Intro</div>
+        <div>00</div>
+      </div>
+      <div class="kicker">認識 Antigravity</div>
+      <h2>Google Antigravity：Agentic IDE 的指揮中心</h2>
+      <div class="three-col">
+        <div class="card big">
+          <div class="num">01</div>
+          <h3>指揮官模式</h3>
+          <p>用自然語言指派多個 Agents，在不同 Workspace 並行規劃、編碼、安裝套件與測試。</p>
+        </div>
+        <div class="card big">
+          <div class="num">02</div>
+          <h3>Artifacts 回饋</h3>
+          <p>代理會產出任務清單、程式碼變動與截圖；你可以像文件批註一樣直接留言修正。</p>
+        </div>
+        <div class="card big">
+          <div class="num">03</div>
+          <h3>瀏覽器自測</h3>
+          <p>內建瀏覽器自動化，能點擊、填表、看 Console Logs，並回頭修正前端錯誤。</p>
+        </div>
+      </div>
+      <div class="mission-box">適合快速做 MVP、後台原型與既有專案整理；但金流、醫療、資安等高風險專案，AI 產出的程式碼一定要由專業工程師驗收。</div>
+    </section>
+
+
+
+
+
+
+
+
+
     <section class="slide">
       <div class="topbar">
         <div class="brandmark"><span class="dot"></span>Antigravity</div>
@@ -1211,6 +1521,47 @@
       <div class="source">資料來源：Google Antigravity 官方文件與 Codelab。</div>
     </section>
 
+
+
+
+
+
+
+
+
+    <section class="slide">
+      <div class="topbar">
+        <div class="brandmark"><span class="dot"></span>LocalWP Intro</div>
+        <div>00</div>
+      </div>
+      <div class="kicker">認識 LocalWP</div>
+      <h2>先在本機建立一個可以放心拆壞的 WordPress 沙盒</h2>
+      <div class="three-col">
+        <div class="card big">
+          <div class="num">01</div>
+          <h3>不用主機也能跑</h3>
+          <p>LocalWP 會在電腦裡建立 WordPress 測試站，不需要先買主機或設定網域。</p>
+        </div>
+        <div class="card big">
+          <div class="num">02</div>
+          <h3>安全試 Theme</h3>
+          <p>AI 轉出的 Theme 可以先在本機啟用、預覽、修錯，不會影響正式網站。</p>
+        </div>
+        <div class="card big">
+          <div class="num">03</div>
+          <h3>接上交付流程</h3>
+          <p>確認畫面、圖片路徑與 RWD 正常後，再打包部署到正式 WordPress 環境。</p>
+        </div>
+      </div>
+      <p class="footer-note">今天用 LocalWP 當安全練習場：先讓 AI 產物能被 WordPress 安裝，再談上線與維護。</p>
+    </section>
+
+
+
+
+
+
+
     <section class="slide">
       <div class="topbar">
         <div class="brandmark"><span class="dot"></span>LocalWP</div>
@@ -1230,10 +1581,53 @@
       <p class="footer-note">建議先建立一個乾淨測試站，避免直接在正式網站上測試 AI 轉換結果。</p>
     </section>
 
+
+
+
+
+
+
+
+
+    <section class="slide">
+      <div class="topbar">
+        <div class="brandmark"><span class="dot"></span>WordPress Dynamic</div>
+        <div>14</div>
+      </div>
+      <div class="kicker">從靜態內容改成可管理內容</div>
+      <h2>初版可以先保留靜態，第二階段再導入 WordPress 動態化</h2>
+      <div class="three-col">
+        <div class="card big">
+          <h3>階段 1</h3>
+          <p>完成可啟用 Theme，畫面與 Stitch 靜態版一致。</p>
+        </div>
+        <div class="card big">
+          <h3>階段 2</h3>
+          <p>把標題、段落、按鈕連結改為 Customizer 或 ACF 欄位。</p>
+        </div>
+        <div class="card big">
+          <h3>階段 3</h3>
+          <p>把重複區塊轉成 Gutenberg Block 或 Pattern。</p>
+        </div>
+      </div>
+      <div class="code">常見替換：
+        &lt;h1&gt;固定標題&lt;/h1&gt; → &lt;?php the_title(); ?&gt;
+        固定內文 → &lt;?php the_content(); ?&gt;
+        圖片路徑 → &lt;?php echo esc_url(get_template_directory_uri()); ?&gt;/assets/image.png</div>
+    </section>
+
+
+
+
+
+
+
+
+
     <section class="slide">
       <div class="topbar">
         <div class="brandmark"><span class="dot"></span>Theme Structure</div>
-        <div>10</div>
+        <div>11</div>
       </div>
       <div class="kicker">WordPress Theme 最小結構</div>
       <h2>Antigravity 要轉換的不是「一頁 HTML」，而是一個 Theme 專案</h2>
@@ -1257,10 +1651,18 @@
       </div>
     </section>
 
+
+
+
+
+
+
+
+
     <section class="slide">
       <div class="topbar">
         <div class="brandmark"><span class="dot"></span>Convert</div>
-        <div>11</div>
+        <div>12</div>
       </div>
       <div class="kicker">使用 Antigravity 轉成 WordPress Theme</div>
       <h2>給 Agent 的任務要「具體、可驗收、分階段」</h2>
@@ -1274,10 +1676,18 @@
         7. 最後提供啟用與測試步驟</div>
     </section>
 
+
+
+
+
+
+
+
+
     <section class="slide">
       <div class="topbar">
         <div class="brandmark"><span class="dot"></span>Functions</div>
-        <div>12</div>
+        <div>13</div>
       </div>
       <div class="kicker">關鍵轉換片段</div>
       <h2>讓樣式與腳本用 WordPress 方式載入</h2>
@@ -1302,67 +1712,13 @@
       <p class="footer-note">不要直接在 header.php 寫死 CSS/JS 路徑；用 enqueue 才符合 WordPress Theme 的標準做法。</p>
     </section>
 
-    <section class="slide">
-      <div class="topbar">
-        <div class="brandmark"><span class="dot"></span>WordPress Dynamic</div>
-        <div>13</div>
-      </div>
-      <div class="kicker">從靜態內容改成可管理內容</div>
-      <h2>初版可以先保留靜態，第二階段再導入 WordPress 動態化</h2>
-      <div class="three-col">
-        <div class="card big">
-          <h3>階段 1</h3>
-          <p>完成可啟用 Theme，畫面與 Stitch 靜態版一致。</p>
-        </div>
-        <div class="card big">
-          <h3>階段 2</h3>
-          <p>把標題、段落、按鈕連結改為 Customizer 或 ACF 欄位。</p>
-        </div>
-        <div class="card big">
-          <h3>階段 3</h3>
-          <p>把重複區塊轉成 Gutenberg Block 或 Pattern。</p>
-        </div>
-      </div>
-      <div class="code">常見替換：
-        &lt;h1&gt;固定標題&lt;/h1&gt; → &lt;?php the_title(); ?&gt;
-        固定內文 → &lt;?php the_content(); ?&gt;
-        圖片路徑 → &lt;?php echo esc_url(get_template_directory_uri()); ?&gt;/assets/image.png</div>
-    </section>
 
-    <section class="slide">
-      <div class="topbar">
-        <div class="brandmark"><span class="dot"></span>Workflow</div>
-        <div>14</div>
-      </div>
-      <div class="kicker">完整工作流</div>
-      <h2>AI 設計不是終點，而是 WordPress 開發的起點</h2>
-      <div class="diagram">
-        <div class="line l1"></div>
-        <div class="line l2"></div>
-        <div class="line l3"></div>
-        <div class="line l4"></div>
-        <div class="node a">
-          <h3>Google Stitch</h3>
-          <p>Prompt / 圖片生成 UI</p>
-        </div>
-        <div class="node b">
-          <h3>Export ZIP</h3>
-          <p>取得靜態前端與素材</p>
-        </div>
-        <div class="node c">
-          <h3>Antigravity</h3>
-          <p>拆解、重構、轉換 Theme</p>
-        </div>
-        <div class="node d">
-          <h3>LocalWP</h3>
-          <p>本機安裝、啟用、測試</p>
-        </div>
-        <div class="node e">
-          <h3>WordPress Theme</h3>
-          <p>可持續維護與擴充</p>
-        </div>
-      </div>
-    </section>
+
+
+
+
+
+
 
     <section class="slide">
       <div class="topbar">
@@ -1387,6 +1743,53 @@
       </div>
     </section>
 
+
+
+
+
+
+
+
+
+    <section class="slide">
+      <div class="topbar">
+        <div class="brandmark"><span class="dot"></span>Workflow</div>
+        <div>10</div>
+      </div>
+      <div class="kicker">完整工作流</div>
+      <h2>AI 設計不是終點，而是 WordPress 開發的起點</h2>
+      <div class="workflow-chain">
+        <div class="step">
+          <small>STEP 1</small>
+          <strong>Google Stitch → Export ZIP</strong>
+          <span>用 Prompt 或圖片生成 UI，確認版型、區塊、RWD 後，匯出 ZIP 與靜態前端素材。</span>
+        </div>
+        <div class="step">
+          <small>STEP 2</small>
+          <strong>Antigravity</strong>
+          <span>打開 ZIP 專案，讓 Agent 分析結構、拆任務，轉成 WordPress Theme。</span>
+        </div>
+        <div class="step">
+          <small>STEP 3</small>
+          <strong>LocalWP</strong>
+          <span>把 Theme 放進本機 WordPress，啟用、預覽，檢查路徑與錯誤。</span>
+        </div>
+        <div class="step">
+          <small>STEP 4</small>
+          <strong>WordPress</strong>
+          <span>驗收後部署到正式站，再逐步加入動態資料、後台管理與維護結構。</span>
+        </div>
+      </div>
+    </section>
+
+
+
+
+
+
+
+
+
     <section class="slide">
       <div class="topbar">
         <div class="brandmark"><span class="dot"></span>Wrap-up</div>
@@ -1410,6 +1813,14 @@
         </div>
       </div>
     </section>
+
+
+
+
+
+
+
+
 
     <section class="slide">
       <div class="topbar">
@@ -1443,11 +1854,15 @@
     let index = 0;
     const progress = document.getElementById('progress');
     const count = document.getElementById('count');
+    const topbarCounts = slides.map(s => s.querySelector('.topbar > div:last-child'));
     function show(i) {
       index = Math.max(0, Math.min(slides.length - 1, i));
       slides.forEach((s, n) => s.classList.toggle('active', n === index));
       progress.style.width = ((index + 1) / slides.length * 100) + '%';
       count.textContent = (index + 1) + ' / ' + slides.length;
+      topbarCounts.forEach((el, n) => {
+        if (el) el.textContent = (n + 1) + ' / ' + slides.length;
+      });
       location.hash = 'slide-' + (index + 1);
     }
     document.getElementById('prev').onclick = () => show(index - 1);
@@ -1457,6 +1872,18 @@
       if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); show(index - 1) }
       if (e.key === 'Home') show(0); if (e.key === 'End') show(slides.length - 1);
     });
+    let wheelDelta = 0;
+    let wheelLocked = false;
+    addEventListener('wheel', e => {
+      if (e.ctrlKey || wheelLocked) return;
+      e.preventDefault();
+      wheelDelta += e.deltaY;
+      if (Math.abs(wheelDelta) < 80) return;
+      show(index + Math.sign(wheelDelta));
+      wheelDelta = 0;
+      wheelLocked = true;
+      setTimeout(() => { wheelLocked = false; }, 520);
+    }, { passive: false });
     const m = location.hash.match(/slide-(\d+)/); if (m) index = Number(m[1]) - 1; show(index);
   </script>
 </body>

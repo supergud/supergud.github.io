@@ -394,24 +394,24 @@ pre{max-width:100%;white-space:pre-wrap;word-break:break-word}
 <div class="left-copy narrow">
 <div class="eyebrow">Why WebMCP?</div>
 <h2>不要只讓 Agent 模擬滑鼠和鍵盤</h2>
-<p class="lead">傳統「啟動（actuation）」是讓 Agent 像真人一樣點擊、輸入、走流程；每一步都需要重新理解畫面。</p>
+<p class="lead">傳統操作依賴截圖辨識（Pixel-based actuation）或 DOM 分析，再模擬點擊與輸入；每一步都得推測介面用途。</p>
 <ul><li>畫面、文案或 DOM 一改，代理就可能誤判</li><li>複雜任務會累積錯誤，可靠度下降</li><li>Agent 需要猜測元素用途，速度與穩定性都受影響</li><li>使用者也比較難確認 Agent 到底做了什麼</li></ul>
-<p class="callout">WebMCP：網站宣告工具，沿用前端邏輯與登入情境。</p>
+<p class="callout">從猜畫面到呼叫工具：網站主動宣告點餐、訂票等能力，降低 UI 變動造成的失敗。</p>
 </div>
-<div class="source">Source: Chrome for Developers — WebMCP docs, 2026-06-09</div>
+<div class="source">Source: Chrome for Developers — WebMCP docs, 2026-11-12</div>
 </section><section id="slide-4" data-original-slide="4" class="slide" data-section="WebMCP 介紹"><div class="slide-no">04</div>
 <div class="deck-label">WebMCP 介紹</div>
 <div class="center-copy">
 <div class="eyebrow">Core Idea</div>
 <h2>一句話理解 WebMCP</h2>
-<p class="lead big">WebMCP 是一個建議中的網頁標準：網站用 JavaScript 與 HTML 表單標註，把功能公開成 AI Agent 可理解與呼叫的工具。</p>
+<p class="lead big">WebMCP 讓網站把功能公開為結構化工具（Tools），供瀏覽器中的 AI Agent 呼叫；由 W3C Web Machine Learning 社群推進草案。</p>
 <div class="progress-line">
 <div><b>Discovery</b><span>頁面用標準方式註冊 checkout、filter_results 等工具</span></div>
 <div><b>JSON Schema</b><span>明確定義工具輸入，降低誤解與幻覺</span></div>
 <div><b>State</b><span>共享目前網頁脈絡與可立即操作的資源</span></div>
 <div><b>Action</b><span>在可見瀏覽器環境中執行既有功能</span></div>
 </div>
-<p class="callout center">不是取代 UI，而是替 UI 加上一層給 Agent 使用的工具合約；人類體驗和品牌流程仍留在網站裡。</p>
+<p class="callout center">草案階段：尚非 W3C 正式標準，也未進入 W3C 標準軌道；人與 Agent 共享網站介面。</p>
 </div>
 <div class="source">Source: Chrome for Developers — WebMCP docs</div>
 </section><section id="slide-5" data-original-slide="5" class="slide" data-section="WebMCP 介紹"><div class="slide-no">05</div>
@@ -434,7 +434,7 @@ pre{max-width:100%;white-space:pre-wrap;word-break:break-word}
 <p class="callout center">共享情境：沿用分頁 Session / Cookie，由應用更新 UI，讓人與 Agent 檢視同一份結果。</p>
 </div>
 <div class="source">Source: Chrome for Developers — WebMCP docs</div>
-</section><section id="slide-6" class="slide main-slide"><div class="page-content"><div class="eyebrow">Comparison Matrix</div><h2>傳統後端 MCP vs. Client-Side WebMCP</h2><div class="matrix"><table><thead><tr><th>對比維度</th><th>Backend MCP</th><th>WebMCP <small>Client-Side</small></th></tr></thead><tbody><tr><th scope="row">執行環境</th><td>外部獨立伺服器（Server-side）</td><td>使用者本地瀏覽器分頁（Client-side）</td></tr><tr><th scope="row">通訊路徑</th><td>Agent ↔ 後端 Server</td><td>Agent ↔ 瀏覽器分頁（DOM / JS）</td></tr><tr><th scope="row">使用者認證</th><td>另行整合 OAuth / API Key</td><td>沿用網站 Session / Cookie 與授權</td></tr><tr><th scope="row">視覺 UI 呈現</th><td>需額外串接前端狀態同步</td><td>工具沿用前端邏輯，即時更新 UI</td></tr><tr><th scope="row">開發者門檻</th><td>需維護工具服務與認證整合</td><td>可包裝現有 JS / Form；複雜狀態仍需設計</td></tr></tbody></table></div><p class="note">WebMCP 補足前端互動；後端 MCP 適合服務與資料整合，兩者可以搭配。</p><div class="citation"><a href="https://github.com/webmachinelearning/webmcp" target="_blank" rel="noopener">WebMCP Explainer</a></div></div></section><section id="slide-7" class="slide main-slide"><div class="page-content"><div class="eyebrow">Declarative API</div><h2>宣告式表單：用語意標註漸進增強</h2><div class="implementation"><div class="code-surface"><div class="code-label">HTML / orderLunch</div><pre><code>&lt;form id=<span class="str">&quot;lunchForm&quot;</span> toolname=<span class="str">&quot;orderLunch&quot;</span>
+</section><section id="slide-6" class="slide main-slide"><div class="page-content"><div class="eyebrow">Comparison Matrix</div><h2>傳統後端 MCP vs. Client-Side WebMCP</h2><div class="matrix"><table><thead><tr><th>對比維度</th><th>Backend MCP</th><th>WebMCP <small>Client-Side</small></th></tr></thead><tbody><tr><th scope="row">執行環境</th><td>本機或遠端 MCP Server</td><td>使用者本地瀏覽器分頁（Client-side）</td></tr><tr><th scope="row">通訊路徑</th><td>Agent ↔ 後端 Server</td><td>Agent ↔ 瀏覽器 ↔ 頁面工具</td></tr><tr><th scope="row">使用者認證</th><td>另行整合 OAuth / API Key</td><td>沿用網站 Session / Cookie 與授權</td></tr><tr><th scope="row">視覺 UI 呈現</th><td>可見 UI 視宿主整合方式而定</td><td>工具沿用前端邏輯，即時更新 UI</td></tr><tr><th scope="row">開發者門檻</th><td>需維護工具服務與認證整合</td><td>可包裝現有 JS / Form；複雜狀態仍需設計</td></tr></tbody></table></div><p class="note">MCP 常用於 Postgres、企業系統與本機檔案；WebMCP 聚焦當前分頁，保留品牌介面與人機協作（Human-in-the-loop）。</p><div class="citation"><a href="https://github.com/webmachinelearning/webmcp" target="_blank" rel="noopener">WebMCP Explainer</a></div></div></section><section id="slide-7" class="slide main-slide"><div class="page-content"><div class="eyebrow">Declarative API</div><h2>宣告式表單：用語意標註漸進增強</h2><div class="implementation"><div class="code-surface"><div class="code-label">HTML / orderLunch</div><pre><code>&lt;form id=<span class="str">&quot;lunchForm&quot;</span> toolname=<span class="str">&quot;orderLunch&quot;</span>
   tooldescription=<span class="str">&quot;提交員工午餐訂單，包含姓名、餐點與備註。&quot;</span>&gt;
   &lt;label for=<span class="str">&quot;employee&quot;</span>&gt;訂購人姓名&lt;/label&gt;
   &lt;input id=<span class="str">&quot;employee&quot;</span> name=<span class="str">&quot;employee_name&quot;</span> type=<span class="str">&quot;text&quot;</span>
@@ -448,7 +448,7 @@ pre{max-width:100%;white-space:pre-wrap;word-break:break-word}
   &lt;label for=<span class="str">&quot;memo&quot;</span>&gt;備註&lt;/label&gt;
   &lt;input id=<span class="str">&quot;memo&quot;</span> name=<span class="str">&quot;notes&quot;</span> toolparamdescription=<span class="str">&quot;餐點備註&quot;</span>&gt;
   &lt;button type=<span class="str">&quot;submit&quot;</span>&gt;送出訂單&lt;/button&gt;
-&lt;/form&gt;</code></pre></div><div class="explain"><article class="panel"><h3>表單 → 工具</h3><p><code>toolname</code> 定義名稱。<br><code>tooldescription</code> 說明用途。<br><br>瀏覽器將表單辨識為 <code>orderLunch</code>。</p></article><article class="panel"><h3>欄位 → JSON Schema</h3><p><code>name</code> 對應參數名稱。<br><code>toolparamdescription</code> 描述欄位。<br><code>required</code> 表示必填。</p></article><p class="note">沿用既有 submit 處理流程；本例補齊備註欄位與 label 關聯。</p></div></div><div class="citation"><a href="https://developer.chrome.com/docs/ai/webmcp/declarative-api" target="_blank" rel="noopener">Chrome Declarative API</a></div></div></section><section id="slide-8" class="slide main-slide"><div class="page-content"><div class="eyebrow">Imperative API</div><h2>指令式程式碼：動態註冊前端能力</h2><div class="implementation imperative"><div class="code-surface"><div class="code-label">JavaScript / add-todo</div><pre><code><span class="kw">const</span> controller = <span class="kw">new</span> AbortController();
+&lt;/form&gt;</code></pre></div><div class="explain"><article class="panel"><h3>表單 → 工具</h3><p><code>toolname</code> 定義名稱。<br><code>tooldescription</code> 說明用途。<br><br>瀏覽器將表單辨識為 <code>orderLunch</code>。</p></article><article class="panel"><h3>欄位 → JSON Schema</h3><p><code>name</code> 對應參數名稱。<br><code>toolparamdescription</code> 描述欄位。<br><code>required</code> 表示必填。</p></article><p class="note">適合客服、搜尋、標準結帳表單；工具註冊可不寫 JavaScript，沿用 submit，複雜流程仍需程式處理。</p></div></div><div class="citation"><a href="https://developer.chrome.com/docs/ai/webmcp/declarative-api" target="_blank" rel="noopener">Chrome Declarative API</a></div></div></section><section id="slide-8" class="slide main-slide"><div class="page-content"><div class="eyebrow">Imperative API</div><h2>指令式程式碼：動態註冊前端能力</h2><div class="implementation imperative"><div class="code-surface"><div class="code-label">JavaScript / add-todo</div><pre><code><span class="kw">const</span> controller = <span class="kw">new</span> AbortController();
 <span class="kw">if</span> (<span class="kw">typeof</span> document.modelContext?.registerTool === <span class="str">&quot;function&quot;</span>) {
   <span class="kw">await</span> document.modelContext.registerTool({
     name: <span class="str">&quot;add-todo&quot;</span>,
@@ -468,7 +468,7 @@ pre{max-width:100%;white-space:pre-wrap;word-break:break-word}
     }
   }, { signal: controller.signal });
 }
-<span class="comment">// 卸載工具：controller.abort();</span></code></pre></div><div class="explain"><article class="panel"><h3>SPA / 非同步工作流</h3><p><strong>先檢測支援</strong><br>不支援時保留原有 UI。<br><br><strong>執行應用邏輯</strong><br>addTodoItemToCollection 由網站實作，更新資料與 UI。</p></article><article class="panel"><h3>兩個取消訊號</h3><p><strong>註冊 signal</strong>：管理工具生命週期。<br><strong>執行 signal</strong>：取消本次任務；非同步流程也應配合處理。</p></article><p class="note">草案 API 範例；await 位於 module 或 async 函式內。readOnlyHint 是提示，非權限保證。</p></div></div><div class="citation"><a href="https://webmachinelearning.github.io/webmcp/" target="_blank" rel="noopener">WebMCP 草案</a></div></div></section><section id="slide-9" class="slide main-slide"><div class="page-content"><div class="eyebrow">Contextual Tools</div><h2>情境化工具與 Token 預算管理</h2><p class="intro">依目前頁面提供相關工具，減少無關 Schema 與選擇干擾。</p><div class="columns lifecycle"><article class="panel"><h3>商品清單頁</h3><p><span class="tool-pill">search_catalog</span><span class="tool-pill">filter-products</span><br><br>元件載入時註冊搜尋、篩選工具。<br>Agent 專注於找商品。</p></article><article class="panel"><h3>結帳頁</h3><p><span class="tool-pill">fill_address</span><span class="tool-pill">review_order</span><br><br>卸載舊工具，再註冊地址與訂單確認工具。<br>敏感操作仍需確認。</p></article></div><div class="shared"><strong>頁面切換</strong><code>controller.abort()</code><span>移除舊工具 → 註冊新情境工具</span></div><p class="note">同一分頁的 SPA 路由與元件卸載，要主動清理；切換瀏覽器分頁不等於文件自動卸載。</p><div class="citation"><a href="https://github.com/webmachinelearning/webmcp" target="_blank" rel="noopener">WebMCP Explainer</a></div></div></section><section id="slide-10" data-original-slide="7" class="slide" data-section="WebMCP 介紹"><div class="slide-no">10</div>
+<span class="comment">// 卸載工具：controller.abort();</span></code></pre></div><div class="explain"><article class="panel"><h3>SPA / 非同步工作流</h3><p><strong>先檢測支援</strong><br>不支援時保留原有 UI。<br><br><strong>複雜流程</strong><br>適合 SPA、預約即時驗證、多步驟購物車；由網站串接後端並更新 UI。</p></article><article class="panel"><h3>兩個取消訊號</h3><p><strong>註冊 signal</strong>：管理工具生命週期。<br><strong>執行 signal</strong>：取消本次任務；非同步流程也應配合處理。</p></article><p class="note">草案 API 範例；await 位於 module 或 async 函式內。readOnlyHint 是提示，非權限保證。</p></div></div><div class="citation"><a href="https://webmachinelearning.github.io/webmcp/" target="_blank" rel="noopener">WebMCP 草案</a></div></div></section><section id="slide-9" class="slide main-slide"><div class="page-content"><div class="eyebrow">Contextual Tools</div><h2>情境化工具與 Token 預算管理</h2><p class="intro">依目前頁面提供相關工具，減少無關 Schema 與選擇干擾。</p><div class="columns lifecycle"><article class="panel"><h3>商品清單頁</h3><p><span class="tool-pill">search_catalog</span><span class="tool-pill">filter-products</span><br><br>元件載入時註冊搜尋、篩選工具。<br>Agent 專注於找商品。</p></article><article class="panel"><h3>結帳頁</h3><p><span class="tool-pill">fill_address</span><span class="tool-pill">review_order</span><br><br>卸載舊工具，再註冊地址與訂單確認工具。<br>敏感操作仍需確認。</p></article></div><div class="shared"><strong>頁面切換</strong><code>controller.abort()</code><span>移除舊工具 → 註冊新情境工具</span></div><p class="note">同一分頁的 SPA 路由與元件卸載，要主動清理；切換瀏覽器分頁不等於文件自動卸載。</p><div class="citation"><a href="https://github.com/webmachinelearning/webmcp" target="_blank" rel="noopener">WebMCP Explainer</a></div></div></section><section id="slide-10" data-original-slide="7" class="slide" data-section="WebMCP 介紹"><div class="slide-no">10</div>
 <div class="deck-label">WebMCP 介紹</div>
 <div class="center-copy wide">
 <div class="eyebrow">Use Cases</div>
@@ -502,15 +502,15 @@ pre{max-width:100%;white-space:pre-wrap;word-break:break-word}
 <div class="left-copy narrow">
 <div class="eyebrow">Getting Started</div>
 <h2>從一個工具開始導入</h2>
-<p class="lead">官方文件提供兩種測試路徑：Chrome 149 起可加入來源試用；本機開發可開啟 chrome://flags/#enable-webmcp-testing。</p>
+<p class="lead">從早期預覽走向來源試用：Chrome 149 起可加入 Origin Trial；本機啟用 chrome://flags/#enable-webmcp-testing 後重啟。</p>
 <div class="steps">
 <div class="mini-card"><span>01</span><h3>選定流程</h3><p>挑高價值、可驗證、低風險的任務，例如搜尋或客服表單</p></div>
 <div class="mini-card"><span>02</span><h3>定義 Schema</h3><p>定義輸入 Schema、必要欄位與可理解的結果／錯誤</p></div>
 <div class="mini-card"><span>03</span><h3>註冊工具</h3><p>用 HTML 標註表單，或用 JavaScript 註冊複雜 handler</p></div>
-<div class="mini-card"><span>04</span><h3>用 Inspector 測試</h3><p>檢查工具探索、手動呼叫、結構化輸出與錯誤回應</p></div>
+<div class="mini-card"><span>04</span><h3>用 Inspector 測試</h3><p>Inspector 檢查與手動呼叫；再用 Agent 擴充功能測試自然語言任務</p></div>
 </div>
 </div>
-<div class="source">Source: Chrome for Developers — WebMCP docs, 2026-06-09</div>
+<div class="source">Source: Chrome for Developers — WebMCP docs, 2026-11-12</div>
 </section><section id="slide-14" class="slide main-slide" data-section="WebMCP 介紹">
 <div class="page-content">
 <div class="eyebrow">WordPress × WebMCP / Live Demo</div>
@@ -568,7 +568,7 @@ WC()-&gt;cart-&gt;set_session();
 return mwd_cart_data();</code></pre></article></div>
 <p class="note"><strong>Demo 邊界：</strong>僅登入管理員可用；只清理自己加入的 Demo 商品；不建立訂單或付款。</p>
 <p class="citation">核心節錄：assets/js/script.js 的 register() / run()；merveille-webmcp-demo.php 的 REST 路由與 mwd_execute()。<br>為閱讀省略外層迴圈、支援偵測、錯誤處理與商品驗證；api、names、cfg 等由外掛定義，非獨立可執行範例。</p>
-</div></section><section id="slide-16" class="slide main-slide"><div class="page-content"><div class="eyebrow">Security & Human-in-the-Loop</div><h2>Agent 可以代辦，使用者保有決定權</h2><div class="columns"><article class="panel"><h3>敏感操作與風險提示</h3><p><strong>付款、刪除、送出前確認</strong><br>以 UI 清楚顯示對象、金額與影響，再取得使用者確認。<br><br><strong>readOnlyHint</strong><br>唯讀工具可標示 true；這只是提示，不能取代伺服器授權與驗證。</p></article><article class="panel"><h3>資料與來源邊界</h3><p><strong>Prompt Injection / Tool Poisoning</strong><br>工具描述與回傳值可能夾帶惡意指令，應視為不可信輸入。<br><br><strong>iframe 權限政策</strong><br>tools 預設 self；跨來源 iframe 需明確委派，如 <code>allow="tools"</code>，並遵守上層政策。</p></article></div><p class="note">瀏覽器提供執行邊界；網站仍須驗證參數、權限與操作結果。</p><div class="citation"><a href="https://webmachinelearning.github.io/webmcp/" target="_blank" rel="noopener">WebMCP 草案</a></div></div></section><section id="slide-17" class="slide main-slide"><div class="page-content"><div class="eyebrow">Browser Support & Status</div><h2>生態系與支援現況</h2><div class="status-grid"><article class="panel"><h3>瀏覽器 / Origin Trial</h3><p>Chrome 149 起開放來源試用；Edge 亦有 WebMCP 來源試用項目。<br><br>現行草案入口：<code>document.modelContext</code>。舊版實作需核對版本。</p></article><article class="panel"><h3>AI 宿主 / ChatGPT</h3><p>桌面版內建瀏覽器提供 Site tools，可使用網頁暴露的 WebMCP 工具。<br><br>需帳號、所選模型與目前網頁均支援。</p></article><article class="panel"><h3>測試 / 開發工具</h3><p>Model Context Tool Inspector：探索與測試工具。<br><br><code>@mcp-b/global</code>：含 polyfill、MCP server 與傳輸的社群 runtime；需確認 API 版本相容性。</p></article></div><p class="note">截至 2026-09-12：仍屬實驗性草案與試用生態，不能假設所有瀏覽器原生可用。</p><div class="citation"><a href="https://developer.chrome.com/blog/ai-webmcp-origin-trial" target="_blank" rel="noopener">Chrome 試用</a> · <a href="https://developer.microsoft.com/microsoft-edge/origin-trials/trials/0b76fe60-b266-458e-a285-04e375c0c31a" target="_blank" rel="noopener">Edge 試用</a> · <a href="https://help.openai.com/en/articles/20001423" target="_blank" rel="noopener">ChatGPT Site tools</a> · <a href="https://docs.mcp-b.ai/packages/global/overview" target="_blank" rel="noopener">MCP-B runtime</a></div></div></section><section id="slide-18" data-original-slide="12" class="slide" data-section="WebMCP 介紹">
+</div></section><section id="slide-16" class="slide main-slide"><div class="page-content"><div class="eyebrow">Security & Human-in-the-Loop</div><h2>Agent 可以代辦，使用者保有決定權</h2><div class="columns"><article class="panel"><h3>敏感操作與風險提示</h3><p><strong>付款、刪除、送出前確認</strong><br>可請求使用者互動，顯示對象、金額與影響，再取得確認；不能假設每次寫入都自動跳出對話框。<br><br><strong>readOnlyHint</strong><br>唯讀可標示 true；重大操作可加 consequentialHint。提示不能取代伺服器授權與驗證。</p></article><article class="panel"><h3>資料與來源邊界</h3><p><strong>Prompt Injection / Tool Poisoning</strong><br>工具描述與回傳值可能夾帶惡意指令，應視為不可信輸入。<br><br><strong>iframe 權限政策</strong><br>tools 預設 self；跨來源 iframe 需明確委派，如 <code>allow="tools"</code>，並遵守上層政策。</p></article></div><p class="note">瀏覽器提供執行邊界；網站仍須驗證參數、權限與操作結果。</p><div class="citation"><a href="https://webmachinelearning.github.io/webmcp/" target="_blank" rel="noopener">WebMCP 草案</a></div></div></section><section id="slide-17" class="slide main-slide"><div class="page-content"><div class="eyebrow">Browser Support &amp; Ecosystem</div><h2>測試工具與框架生態系</h2><div class="status-grid"><article class="panel"><h3>Chrome / 本機測試</h3><p>Chrome 149 起提供 Origin Trial。<br><br>開啟旗標、設為 Enabled 並重啟：<br><code>chrome://flags/#enable-webmcp-testing</code><br><br>使用前檢測 <code>document.modelContext</code>。</p></article><article class="panel"><h3>Inspector / Agent</h3><p>Model Context Tool Inspector：探索工具、檢查參數與手動執行。<br><br>Example Agentic Chrome Extension：用自然語言測試任務。<br><br>DevTools：除錯工具與 Schema。</p></article><article class="panel"><h3>React / Vue / Angular</h3><p>Chrome 官方文件列出實驗性框架整合；需核對套件與 API 版本。<br><br>Vercel <code>mcp-handler</code> 是後端 MCP HTTP adapter；官方文件未證實 WebMCP 支援。</p></article></div><p class="note">查核：2026-11-12。仍屬實驗性草案；框架整合不代表所有瀏覽器與 Agent 都能原生使用。</p><div class="citation"><a href="https://developer.chrome.com/docs/ai/webmcp" target="_blank" rel="noopener">Chrome：測試、擴充功能與框架整合</a> · <a href="https://github.com/vercel-labs/mcp-handler" target="_blank" rel="noopener">Vercel mcp-handler</a></div></div></section><section id="slide-18" data-original-slide="12" class="slide" data-section="WebMCP 介紹">
 <div class="slide-no">18</div>
 <div class="deck-label">WebMCP 介紹</div>
 <div class="center-copy">
@@ -587,7 +587,7 @@ return mwd_cart_data();</code></pre></article></div>
 <div class="center-copy wide refs">
 <div class="eyebrow">References</div>
 <h2>參考資料</h2>
-<p class="lead">第一版介紹結合 API 教學與生態現況，依 2026-09-10 社群草案及官方文件整理。WebMCP 尚非正式 W3C 標準，瀏覽器與宿主支援需確認版本。</p>
+<p class="lead">更新查核：2026-11-12。依 2026-11-11 社群草案及 Chrome 官方文件整合；API 與瀏覽器支援仍持續演進。</p>
 <div class="ref-list">
 <p><b>Chrome for Developers — WebMCP docs</b><br/>https://developer.chrome.com/docs/ai/webmcp?hl=zh-tw</p>
 <p><b>WebMCP GitHub / Explainer</b><br/><a href="https://webmachinelearning.github.io/webmcp/" target="_blank" rel="noopener">最新社群草案</a> · <a href="https://github.com/webmachinelearning/webmcp" target="_blank" rel="noopener">Explainer</a></p>

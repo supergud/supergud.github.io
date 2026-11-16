@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>你的瀏覽器就是 AI：Chrome Built-in AI 實戰</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f11;--bg2:#17171b;--card:#1d1d22;--card2:#26262d;--line:rgba(255,255,255,.12);--text:#f5f5f7;--muted:#a9a9b3;--orange:#ff7a00;--orange2:#ffb066;--blue:#4285f4;--red:#ea4335;--yellow:#fbbc04;--green:#34a853;--mono:"JetBrains Mono",Consolas,"Courier New",monospace}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#050506;color:var(--text);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;overflow:hidden}
+#viewport{position:fixed;inset:0;right:0;display:flex;align-items:center;justify-content:center;transition:right .2s}
+body.notes-open #viewport{right:440px}
+#stage{width:1920px;height:1080px;position:relative;flex:none;transform-origin:center center}
+.slide{position:absolute;inset:0;display:none;padding:76px 110px 96px;background:var(--bg);overflow:hidden}
+.slide.active{display:block}
+.slide:before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(circle at 70% 30%,#000,transparent 75%);pointer-events:none}
+.slide:after{content:"";position:absolute;right:-220px;top:-220px;width:620px;height:620px;border-radius:50%;background:radial-gradient(circle,rgba(255,122,0,.22),transparent 68%);pointer-events:none}
+.slide.divider{background:linear-gradient(135deg,#1a0f05,#0f0f11 60%)}
+.slide.demo{background:linear-gradient(160deg,#10151f,#0f0f11 55%)}
+.slide>*{position:relative;z-index:1}
+.foot{position:absolute!important;left:110px;right:110px;bottom:30px;display:flex;justify-content:space-between;font:500 20px var(--mono);color:#6e6e78;letter-spacing:.08em}
+.dots{display:inline-flex;gap:8px;margin-right:14px;vertical-align:middle}.dots i{width:12px;height:12px;border-radius:50%;display:block}
+.tag{display:inline-block;font:700 22px var(--mono);letter-spacing:.14em;color:var(--orange);text-transform:uppercase;margin-bottom:18px}
+h1{font-size:128px;line-height:1.02;margin:0;font-weight:900;letter-spacing:-.03em}
+h2{font-size:68px;line-height:1.14;margin:0 0 30px;font-weight:900;letter-spacing:-.02em}
+h3{font-size:36px;margin:0 0 12px;font-weight:700}
+p{font-size:32px;line-height:1.55;margin:0 0 14px;color:#d4d4db}
+.muted{color:var(--muted)}
+.o{color:var(--orange)}.b{color:var(--blue)}.r{color:var(--red)}.y{color:var(--yellow)}.g{color:var(--green)}
+.row{display:flex;gap:28px;align-items:stretch}.col{flex:1;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:28px 32px}
+.card.hl{border-color:var(--orange);box-shadow:0 0 0 1px var(--orange) inset,0 0 40px rgba(255,122,0,.18)}
+.card h3{font-size:34px}.card p,.card li{font-size:28px}
+ul{margin:0;padding-left:1.1em}li{font-size:30px;line-height:1.5;margin-bottom:8px;color:#d4d4db}
+.badge{display:inline-block;padding:4px 16px;border-radius:999px;font:700 21px var(--mono);border:2px solid}
+.badge.st{color:var(--green);border-color:var(--green);background:rgba(52,168,83,.12)}
+.badge.dt{color:var(--yellow);border-color:var(--yellow);background:rgba(251,188,4,.1)}
+.badge.ot{color:var(--orange);border-color:var(--orange);background:rgba(255,122,0,.1)}
+.badge.no{color:var(--red);border-color:var(--red);background:rgba(234,67,53,.1)}
+.flow{display:flex;align-items:center;gap:14px;flex-wrap:nowrap}
+.node{background:var(--card2);border:2px solid var(--line);border-radius:16px;padding:16px 22px;font-size:28px;font-weight:700;text-align:center;white-space:nowrap}
+.node.or{border-color:var(--orange);color:var(--orange2)}.node.bl{border-color:var(--blue);color:#9dc0ff}.node.gr{border-color:var(--green);color:#8fd9a2}.node.rd{border-color:var(--red);color:#ff9d94}.node.ye{border-color:var(--yellow);color:#ffe08a}
+.arr{font:700 34px var(--mono);color:var(--orange)}
+.pre{font-family:var(--mono)}
+pre.code{margin:0;background:#0a0a0c;border:1px solid var(--line);border-radius:18px;padding:26px 30px;font:400 27px/1.55 var(--mono);color:#e8e8ee;overflow:hidden;white-space:pre}
+pre.code.sm{font-size:23px;padding:20px 24px}
+pre.code .k{color:#ff9d5c}.code .s{color:#9ee493}.code .c{color:#7d8590;font-style:italic}.code .n{color:#79c0ff}
+pre.code .hl{display:inline-block;width:calc(100% + 60px);margin:0 -30px;padding:0 30px;background:rgba(255,122,0,.17);border-left:5px solid var(--orange)}
+table{width:100%;border-collapse:collapse;font-size:27px}
+th{font:700 22px var(--mono);color:var(--orange);text-align:left;padding:12px 16px;border-bottom:2px solid var(--orange);letter-spacing:.06em}
+td{padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:top;color:#dcdce3}
+td b{color:#fff}
+.note{font-size:24px;color:var(--muted);border-left:4px solid var(--yellow);padding:8px 18px;margin-top:18px;line-height:1.5}
+.note.warn{border-color:var(--red)}
+.big-q{font-size:54px;font-weight:900;line-height:1.3}
+/* demo */
+.pill{display:inline-block;padding:6px 18px;border-radius:999px;font:700 22px var(--mono);background:#2b2b33;color:#bbb}
+.pill.ready,.pill.ok{background:rgba(52,168,83,.2);color:#7ee09a}.pill.loading{background:rgba(251,188,4,.18);color:#ffd45e}.pill.error,.pill.unsupported,.pill.unavailable,.pill.bad{background:rgba(234,67,53,.2);color:#ff8f86}
+.envbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+textarea,.out{width:100%;background:#0a0a0c;border:1px solid var(--line);border-radius:14px;color:#f1f1f5;font:400 26px/1.5 "Noto Sans TC",var(--mono);padding:16px 20px;resize:none}
+.out{min-height:150px;white-space:pre-wrap;color:#ffd9b0}
+button.btn{font:700 26px "Noto Sans TC";background:var(--orange);color:#1a0d00;border:0;border-radius:14px;padding:14px 30px;cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--orange2);border:2px solid var(--orange)}
+button.btn:disabled{opacity:.5;cursor:wait}
+.lbl{font:700 20px var(--mono);color:var(--muted);letter-spacing:.1em;margin:0 0 8px;text-transform:uppercase}
+.steps{list-style:none;padding:0;margin:0}.steps li{display:flex;gap:14px;align-items:center;font-size:27px;padding:8px 0;color:#aaa}
+.steps li i{width:34px;height:34px;border-radius:50%;border:2px solid #555;display:grid;place-items:center;font:700 18px var(--mono);font-style:normal;flex:none}
+.steps li.run{color:#ffd45e}.steps li.run i{border-color:var(--yellow)}
+.steps li.ok{color:#7ee09a}.steps li.ok i{border-color:var(--green);background:var(--green);color:#042}
+.steps li.bad{color:#ff8f86}.steps li.bad i{border-color:var(--red);background:var(--red);color:#fff}
+.mock{border:1px solid var(--line);border-radius:20px;background:var(--card);overflow:hidden}
+.mock .bar{display:flex;align-items:center;gap:10px;padding:14px 20px;background:#26262d;font:400 22px var(--mono);color:#999}
+.mock .bar i{width:14px;height:14px;border-radius:50%;display:block}
+.mock .body{padding:26px 30px}
+.qr{width:200px;height:200px;background:#fff;border-radius:14px;display:grid;place-items:center;padding:10px;color:#333;font-size:20px;text-align:center}
+.qr img,.qr canvas{max-width:100%}
+.zone{border:3px dashed var(--orange);border-radius:20px;padding:20px 26px}
+/* controls */
+#hud{position:fixed;left:0;right:0;bottom:0;height:5px;background:#222;z-index:50}#hud b{display:block;height:100%;width:0;background:var(--orange);transition:width .2s}
+#ctl{position:fixed;left:16px;bottom:16px;z-index:60;display:flex;gap:8px;align-items:center;font:500 14px var(--mono);color:#888}
+#ctl button{background:#222;color:#ddd;border:1px solid #444;border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}
+#notesPanel{position:fixed;top:0;right:0;bottom:0;width:440px;background:#111114;border-left:1px solid #333;padding:22px 24px;overflow:auto;display:none;z-index:40;font-size:16px;line-height:1.7}
+body.notes-open #notesPanel{display:block}
+#notesPanel h4{margin:16px 0 4px;color:var(--orange);font-size:15px;letter-spacing:.06em}
+#notesPanel p,#notesPanel li{font-size:16px;line-height:1.7;color:#d6d6dc;margin:0 0 6px}
+#notesPanel pre.code{font-size:12.5px;padding:12px 14px;white-space:pre-wrap}
+#notesPanel .time{display:inline-block;background:var(--orange);color:#1a0d00;font:700 14px var(--mono);padding:2px 10px;border-radius:999px}
+aside.notes{display:none}
+@media print{html,body{overflow:visible;background:#fff}}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+
+<!-- ============ PART 1 ============ -->
+<section class="slide" data-part="Part 1 · 開場" data-time="1:30">
+  <span class="tag">GDG-style Tech Talk · 40 min · Live Demo</span>
+  <div class="row" style="align-items:center;margin-top:24px">
+    <div class="col" style="flex:1.25">
+      <h1>你的瀏覽器<br><span class="o">就是 AI</span></h1>
+      <p style="font-size:44px;margin-top:30px;color:#fff;font-weight:500">Chrome Built-in AI 實戰</p>
+      <p class="muted" style="font-size:30px">AI in Your Browser: Building with Chrome Built-in AI</p>
+      <p style="margin-top:46px;font-size:28px"><b>Bruce Lee 李冠緯</b> · 哈拉設計 創辦人<br><span class="muted">網站開發 × WordPress 社群 × AI 自動化</span></p>
+    </div>
+    <div class="col" style="flex:.9">
+      <div class="mock"><div class="bar"><i style="background:#ea4335"></i><i style="background:#fbbc04"></i><i style="background:#34a853"></i><span style="margin-left:12px">https://your-site.example</span></div>
+      <div class="body">
+<pre class="code sm">// 這一行跑在使用者的瀏覽器裡
+>> const ai = await LanguageModel.create();
+>> const text = await ai.prompt('Hello');
+
+// 沒有 backend，沒有 API Key</pre>
+      <div class="flow" style="margin-top:22px;justify-content:center"><span class="node ye">JavaScript</span><span class="arr">→</span><span class="node bl">Chrome</span><span class="arr">→</span><span class="node or">Gemini Nano</span></div>
+      </div></div>
+    </div>
+  </div>
+  <div class="foot"><span>Chrome Built-in AI</span><span>01 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：開場定調。這不是 AI 產品介紹，是「看完回去就能動手」的開發者演講。</p><p><b>講稿</b>：大家好，我是 Bruce。今天只講一件事：AI 不一定要在雲端，你手上的 Chrome 本身就能跑 AI。接下來 40 分鐘，我會先講原理，再講有哪些 API，然後花 13 分鐘現場 Demo，最後談怎麼放進正式產品。你只要會 JavaScript 就跟得上，不需要懂模型怎麼訓練。</p><p><b>時間</b>：1 分 30 秒。</p><p><b>過場</b>：先問一個很基本的問題——你做過 AI 功能嗎？你當時是怎麼接的？</p><p><b>展示</b>：右側程式碼是整場的縮影，先不解釋，只讓大家記住「沒有 backend、沒有 API Key」。</p><p><b>名詞</b>：Gemini Nano 是 Google 為裝置端執行設計的小型模型，由 Chrome 下載與管理。</p></aside>
+</section>
+
+<section class="slide" data-part="Part 1 · 開場" data-time="1:30">
+  <span class="tag">01 · The Problem</span>
+  <h2>使用 AI，<span class="o">一定需要 API Key</span> 嗎？</h2>
+  <div class="card" style="margin-bottom:26px">
+    <p class="lbl">傳統作法</p>
+    <div class="flow"><span class="node">Browser</span><span class="arr">→</span><span class="node bl">Backend<br><small class="muted" style="font-weight:400">藏 API Key</small></span><span class="arr">→</span><span class="node rd">Cloud AI<br><small style="font-weight:400">按 Token 計費</small></span><span class="arr">→</span><span class="node bl">Backend</span><span class="arr">→</span><span class="node">Browser</span></div>
+  </div>
+  <div class="card hl" style="margin-bottom:34px">
+    <p class="lbl">Built-in AI</p>
+    <div class="flow"><span class="node">Browser</span><span class="arr">⇄</span><span class="node or">Chrome 管理的本機模型</span><span class="muted" style="font-size:26px;margin-left:16px">資料不必離開裝置</span></div>
+  </div>
+  <div class="row">
+    <div class="col"><p class="big-q" style="font-size:40px">① 如果 AI 直接在 Chrome 執行？</p></div>
+    <div class="col"><p class="big-q" style="font-size:40px">② 如果不必逐次付雲端 Token 費？</p></div>
+    <div class="col"><p class="big-q" style="font-size:40px">③ 如果模型下載後離線也能用？</p></div>
+  </div>
+  <p class="o" style="font-size:36px;font-weight:700;margin-top:18px">這就是 Chrome Built-in AI 想解決的問題。</p>
+  <div class="foot"><span>Chrome Built-in AI</span><span>02 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：用對比讓觀眾感受到「架構可以更簡單」。</p><p><b>講稿</b>：大家平常接 AI，流程幾乎一樣：瀏覽器丟給後端，後端拿 API Key 去問雲端，答案再繞回來。你要顧金鑰安全、顧額度、顧帳單。現在想像另一種：瀏覽器自己就有模型，JavaScript 直接問它。三個問題請大家記著——能不能直接在 Chrome 跑？能不能沒有逐次的 Token 費？能不能離線？這就是 Built-in AI 想解決的事。</p><p><b>時間</b>：1 分 30 秒。</p><p><b>過場</b>：那它到底是什麼？先拆開看。</p><p><b>展示</b>：只講圖，不用操作。</p><p><b>名詞</b>：「沒有逐次 Token 費」不等於「零成本」，裝置資源、相容性、維護成本仍然存在，第 20 頁會講。</p></aside>
+</section>
+
+<!-- ============ PART 2 ============ -->
+<section class="slide" data-part="Part 2 · 基礎原理" data-time="1:30">
+  <span class="tag">02 · Concept</span>
+  <h2>什麼是 <span class="o">Chrome Built-in AI</span>？</h2>
+  <div class="row">
+    <div class="col" style="flex:1.1">
+      <div class="card hl" style="margin-bottom:16px"><h3>① 你的網站（JavaScript）</h3><p class="muted" style="margin:0">呼叫 <span class="pre o">LanguageModel</span>、<span class="pre o">Translator</span>、<span class="pre o">Summarizer</span>…</p></div>
+      <div style="text-align:center;font:700 34px var(--mono);color:var(--orange)">↓ Web API</div>
+      <div class="card" style="margin:16px 0"><h3>② Chrome 瀏覽器</h3><p class="muted" style="margin:0">負責下載、更新、管理模型與資源，網站不用自己部署模型</p></div>
+      <div style="text-align:center;font:700 34px var(--mono);color:var(--orange)">↓ 本機推論</div>
+      <div class="row" style="margin-top:16px"><div class="card col"><h3 class="b">Foundation Model</h3><p style="margin:0">Gemini Nano<br><span class="muted">通用：問答、擷取、摘要</span></p></div><div class="card col"><h3 class="g">Expert Models</h3><p style="margin:0">翻譯、語言偵測等<br><span class="muted">專用、體積較小</span></p></div></div>
+    </div>
+    <div class="col">
+      <div class="card" style="margin-bottom:20px"><h3 class="y">別搞混了</h3>
+        <ul><li><b>Gemini in Chrome</b>（AI 助理功能）≠ Built-in AI API</li><li><b>WebMCP</b> ≠ Built-in AI<br><span class="muted" style="font-size:25px">WebMCP 讓網站暴露工具給 Agent；Built-in AI 讓網站呼叫本機模型</span></li></ul></div>
+      <div class="card"><h3>一句話</h3><p style="margin:0">瀏覽器把「模型」變成像 <span class="pre o">fetch()</span> 一樣的 Web 能力，開發者只管 JavaScript。</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>Chrome Built-in AI</span><span>03 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：建立正確的心智模型，並先切開容易混淆的概念。</p><p><b>講稿</b>：Chrome 做的事是把模型交給瀏覽器管。你的網站只看到 JavaScript API；模型怎麼下載、放哪、何時更新，是 Chrome 的事。底下有兩類模型：通用的 foundation model，像 Gemini Nano；以及專用的 expert model，像翻譯跟語言偵測。右邊先澄清兩件事：Chrome 右上角的 Gemini 助理，是給使用者用的功能，不是給網站呼叫的 API；WebMCP 是另一個故事，我之前有講過，是讓網站把工具交給 AI Agent，不是讓網站跑本機模型。</p><p><b>時間</b>：1 分 30 秒。</p><p><b>過場</b>：知道它是什麼了，那跟雲端 AI 到底差在哪？</p><p><b>展示</b>：用圖由上往下講。</p><p><b>名詞</b>：Foundation model = 通用基礎模型；Expert model = 為單一任務最佳化的專用模型。</p></aside>
+</section>
+
+<section class="slide" data-part="Part 2 · 基礎原理" data-time="2:00">
+  <span class="tag">02 · Architecture</span>
+  <h2>AI 運算架構<span class="o">正在改變</span></h2>
+  <table>
+    <tr><th></th><th>☁ Cloud AI</th><th style="color:var(--orange)">🧩 Built-in AI</th><th>🔀 Hybrid AI</th></tr>
+    <tr><td><b>推論位置</b></td><td>雲端伺服器</td><td>使用者裝置（Chrome 管理模型）</td><td>依裝置與任務動態選擇</td></tr>
+    <tr><td><b>成本</b></td><td>通常依用量計費</td><td>無逐次雲端 Token 費<br><span class="muted">但有裝置資源與維護成本</span></td><td>只把必要請求送雲端</td></tr>
+    <tr><td><b>隱私</b></td><td>資料需送出裝置</td><td>推論在本機進行</td><td>可設定哪些資料能出去</td></tr>
+    <tr><td><b>延遲</b></td><td>含網路往返</td><td>無網路往返；<span class="y">取決於裝置效能</span></td><td>視實際走哪條路徑</td></tr>
+    <tr><td><b>可用性</b></td><td>要有網路</td><td>需下載模型、限特定裝置；下載後可離線</td><td>有 fallback，覆蓋最廣</td></tr>
+    <tr><td><b>模型能力</b></td><td>最強、可選大模型</td><td>小模型，適合輕量任務</td><td>輕任務本機、重任務雲端</td></tr>
+  </table>
+  <div class="foot"><span>Chrome Built-in AI</span><span>04 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：讓觀眾知道三種架構各有用途，不是二選一。</p><p><b>講稿</b>：Cloud AI 能力最強，但每次都要網路、要計費。Built-in AI 在使用者裝置上跑，沒有網路往返，也沒有逐次 Token 費，但模型比較小、裝置要夠力。所以我自己的看法是：真實產品多半是 Hybrid——高頻、輕量、對隱私敏感的丟給本機；複雜的丟雲端。注意「延遲」那一格：本機不一定比較快，要看使用者的電腦。</p><p><b>時間</b>：2 分鐘。</p><p><b>過場</b>：既然有取捨，我們把優勢與代價誠實列出來。</p><p><b>展示</b>：停在「延遲」「成本」兩列各講 20 秒。</p><p><b>名詞</b>：Hybrid AI = 同一個功能，依能力偵測結果在本機與雲端間切換。</p></aside>
+</section>
+
+<section class="slide" data-part="Part 2 · 基礎原理" data-time="1:30">
+  <span class="tag">02 · Trade-offs</span>
+  <h2>優勢與代價，<span class="o">兩邊都要講</span></h2>
+  <div class="row">
+    <div class="col card" style="border-color:var(--green)"><h3 class="g">✓ 優勢</h3>
+      <ul><li><b>本機處理</b>：資料不必送去雲端推論</li><li><b>沒有逐次雲端 Token 費</b></li><li><b>模型下載後可離線使用</b></li><li><b>不用自己部署、維運模型</b>：Chrome 負責管理</li></ul></div>
+    <div class="col card" style="border-color:var(--red)"><h3 class="r">✕ 代價</h3>
+      <ul><li><b>首次下載</b>：模型體積大，需要等待</li><li><b>裝置相容性</b>：不是每台電腦、手機都能用</li><li><b>語言限制</b>：基礎模型支援語言有限</li><li><b>模型能力</b>：小模型，不等於雲端大模型</li><li><b>記憶體與資源消耗</b>：和使用者的其他工作搶資源</li></ul></div>
+  </div>
+  <div class="note warn" style="font-size:28px">⚠ 不要說「所有裝置都能用」，也不要說「本機一定比雲端快」。兩個說法都不成立。</div>
+  <div class="foot"><span>Chrome Built-in AI</span><span>05 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：建立期待管理，避免過度行銷。</p><p><b>講稿</b>：優勢很直白：本機、省 Token 費、可離線、不用顧模型部署。但代價也很實際：第一次要下載，不是每台機器都行，語言支援有限，小模型也比不上大模型，而且吃使用者的記憶體。我特別要強調：沒有人保證本機比雲端快。這是設計取捨，不是魔法。</p><p><b>時間</b>：1 分 30 秒。</p><p><b>過場</b>：接下來進入開發者最在意的部分：Chrome 到底給了哪些 API？</p><p><b>展示</b>：左右各念兩個重點即可。</p><p><b>名詞</b>：無逐次 Token 費指的是呼叫本機模型不產生雲端計費。</p></aside>
+</section>
+
+<!-- ============ PART 3 ============ -->
+<section class="slide divider" data-part="Part 3 · API" data-time="">
+  <div style="margin-top:250px"><span class="tag">Part 3</span><h1 style="font-size:110px">認識 Chrome 的 <span class="o">AI API</span></h1><p class="muted" style="font-size:38px;margin-top:20px">七個 API・各自適合什麼</p></div>
+  <aside class="notes"><p>章節轉場頁，不計時（約 10 秒）。「接下來看七個 API，先建立地圖，再各個擊破。」</p></aside>
+</section>
+
+<section class="slide" data-part="Part 3 · API" data-time="2:00">
+  <span class="tag">03 · API Map</span>
+  <h2>Chrome 的<span class="o">七種</span> Built-in AI API</h2>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px">
+    <div class="card hl"><h3>Prompt API</h3><span class="badge st">Stable</span><p class="muted" style="font-size:24px;margin-top:12px">網頁 Chrome 148<br>擴充功能 Chrome 138<br>取樣參數：Origin Trial</p></div>
+    <div class="card"><h3>Summarizer</h3><span class="badge st">Stable</span><p class="muted" style="font-size:24px;margin-top:12px">Chrome 138<br>摘要</p></div>
+    <div class="card"><h3>Translator</h3><span class="badge st">Stable</span><p class="muted" style="font-size:24px;margin-top:12px">Chrome 138<br>翻譯（支援 zh-Hant）</p></div>
+    <div class="card"><h3>Language Detector</h3><span class="badge st">Stable</span><p class="muted" style="font-size:24px;margin-top:12px">Chrome 138<br>語言辨識</p></div>
+    <div class="card"><h3>Writer</h3><span class="badge dt">Developer Trial</span><p class="muted" style="font-size:24px;margin-top:12px">從主題產生新內容</p></div>
+    <div class="card"><h3>Rewriter</h3><span class="badge dt">Developer Trial</span><p class="muted" style="font-size:24px;margin-top:12px">改寫語氣與長度</p></div>
+    <div class="card"><h3>Proofreader</h3><span class="badge dt">Developer Trial</span><p class="muted" style="font-size:24px;margin-top:12px">文字校對</p></div>
+    <div class="card" style="background:transparent;border-style:dashed"><h3 class="muted">圖例</h3><p style="font-size:24px;margin:0"><span class="g">●</span> Stable 可上線<br><span class="y">●</span> Trial 僅供試驗</p></div>
+  </div>
+  <div class="note">狀態依 2026 年 11 月 Chrome for Developers 文件。官方頁面對 Proofreader 的描述有不一致（另處寫 Origin Trial），上線前請再查官方頁面。</div>
+  <div class="foot"><span>Chrome Built-in AI</span><span>06 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：給一張地圖，並正確標示成熟度。</p><p><b>講稿</b>：Chrome 目前有七個 API。穩定版的有四個：Prompt、Summarizer、Translator、Language Detector。其中 Prompt API 要注意，網頁版是 Chrome 148，擴充功能早在 138 就有了，取樣參數還在 Origin Trial。Writer、Rewriter、Proofreader 還在 Developer Trial，所以我今天不會叫你們把它們放進正式產品，只適合試玩與原型。</p><p><b>時間</b>：2 分鐘。</p><p><b>過場</b>：我們先看最通用的那一個：Prompt API。</p><p><b>展示</b>：用手指帶過綠色與黃色。</p><p><b>名詞</b>：Origin Trial = 對特定網站註冊 token 後才能在正式站使用的實驗機制；Developer Trial = 需要在本機開啟旗標等方式測試。</p></aside>
+</section>
+
+<section class="slide" data-part="Part 3 · API" data-time="2:00">
+  <span class="tag">03 · Prompt API</span>
+  <h2>讓 JavaScript <span class="o">呼叫 Gemini Nano</span></h2>
+  <div class="row">
+    <div class="col" style="flex:1.25">
+<pre class="code">>> const a = await LanguageModel.availability();
+if (a === 'unavailable') return;
+
+>> const session = await LanguageModel.create();
+>> const text = await session.prompt('Write a haiku');
+console.log(text);
+
+>> session.destroy(); // 釋放資源</pre>
+    </div>
+    <div class="col">
+      <div class="card" style="margin-bottom:14px"><h3>能做什麼</h3><p style="margin:0">輸入：<b>文字</b>、圖片、音訊<br>輸出：文字<br>支援語言：<b>en · ja · es · de · fr</b></p></div>
+      <div class="card"><h3 class="y">限制</h3><p style="margin:0;font-size:26px">網頁：Chrome 148<br>擴充功能：Chrome 138<br>桌機 · 22GB 可用空間<br>GPU VRAM &gt; 4GB，或 16GB RAM + 4 核心 CPU</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>Chrome Built-in AI</span><span>07 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：讓大家第一次看到最核心的四個呼叫。</p><p><b>講稿</b>：Prompt API 的生命週期很單純：availability 看能不能用、create 建 session、prompt 丟問題、destroy 釋放。重點在最後一步，session 會佔記憶體，不用就收掉。它可以接文字，也能依版本接圖片、音訊，輸出目前是文字。語言只列了英、日、西、德、法，所以繁體中文不能想當然耳。</p><p><b>時間</b>：2 分鐘。</p><p><b>過場</b>：不是每件事都要找 Prompt，專用 API 有時更合適。</p><p><b>展示</b>：橘色底色標的是四個關鍵呼叫。</p><p><b>名詞</b>：Session = 一段保有上下文的對話實例；音訊輸入需要 GPU。硬體與版本以官方文件為準。</p>
+<pre class="code">// 追蹤下載進度與宣告語言
+const session = await LanguageModel.create({
+  expectedInputs:  [{ type: 'text', languages: ['en'] }],
+  expectedOutputs: [{ type: 'text', languages: ['en'] }],
+  monitor(m) {
+    m.addEventListener('downloadprogress', e =&gt;
+      console.log(`Downloaded ${Math.round(e.loaded * 100)}%`));
+  },
+});</pre></aside>
+</section>
+
+<section class="slide" data-part="Part 3 · API" data-time="1:30">
+  <span class="tag">03 · Task-specific APIs</span>
+  <h2>專用 API：不必所有事都<span class="o">用 Prompt</span></h2>
+  <div class="row" style="margin-bottom:24px">
+    <div class="col card"><h3>通用基礎模型 <span class="muted" style="font-size:24px">Prompt</span></h3><p style="margin:0;font-size:27px">什麼都能試，但要自己寫 prompt、處理輸出格式，結果較不固定。</p></div>
+    <div class="col card hl"><h3>專用 API <span class="muted" style="font-size:24px">Translator / Detector / Summarizer</span></h3><p style="margin:0;font-size:27px">介面固定、輸出可預期，Translator 與 Detector 使用專用模型。</p></div>
+  </div>
+  <div class="row">
+    <div class="col card"><h3 class="b">🌐 多語系網站</h3><p style="font-size:27px;margin:0">Detector 判斷訪客輸入語言 → Translator 即時翻譯留言或表單</p></div>
+    <div class="col card"><h3 class="g">📰 內容平台</h3><p style="font-size:27px;margin:0">Summarizer 為長文產生摘要，放在文章列表或預覽</p></div>
+    <div class="col card"><h3 class="y">🎧 客服</h3><p style="font-size:27px;margin:0">先偵測來信語言並翻譯，客服人員快速看懂，再決定是否送雲端處理</p></div>
+  </div>
+  <div class="foot"><span>Chrome Built-in AI</span><span>08 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：養成「先找專用 API」的習慣。</p><p><b>講稿</b>：有人會覺得 Prompt API 什麼都能做，那全用它不就好？可以，但你要自己處理 prompt 跟格式。翻譯用 Translator，輸入輸出固定、可預期。三個情境：多語系網站，先偵測再翻譯；內容平台，文章摘要；客服，快速看懂外語來信。</p><p><b>時間</b>：1 分 30 秒。</p><p><b>過場</b>：那到底哪個任務該用哪個 API？一張矩陣給你。</p><p><b>展示</b>：三個案例各點一句。</p><p><b>名詞</b>：Summarizer 在 Chrome 中使用 Gemini Nano；Translator 與 Language Detector 使用專用模型。</p></aside>
+</section>
+
+<section class="slide" data-part="Part 3 · API" data-time="1:30">
+  <span class="tag">03 · Cheat Sheet</span>
+  <h2>哪個 API 適合<span class="o">哪種情境</span>？</h2>
+  <table>
+    <tr><th>情境</th><th>API</th><th>狀態</th><th>備註</th></tr>
+    <tr><td>翻譯</td><td><b class="o">Translator</b></td><td><span class="badge st">Stable</span></td><td>支援 zh-Hant；語言對需先下載</td></tr>
+    <tr><td>語言辨識</td><td><b class="o">Language Detector</b></td><td><span class="badge st">Stable</span></td><td>回傳語言代碼與信心值</td></tr>
+    <tr><td>文章摘要</td><td><b class="o">Summarizer</b></td><td><span class="badge st">Stable</span></td><td>輸出語言有限，請先測試</td></tr>
+    <tr><td>自由問答、資訊擷取</td><td><b class="o">Prompt</b></td><td><span class="badge st">Stable</span></td><td>en / ja / es / de / fr；可用 JSON Schema 限制輸出</td></tr>
+    <tr><td>內容寫作與改寫</td><td><b class="o">Writer / Rewriter</b></td><td><span class="badge dt">Dev Trial</span></td><td>僅供試驗，勿直接上線</td></tr>
+    <tr><td>文字校對</td><td><b class="o">Proofreader</b></td><td><span class="badge dt">Dev Trial</span></td><td>僅供試驗，勿直接上線</td></tr>
+  </table>
+  <div class="foot"><span>Chrome Built-in AI</span><span>09 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：給一張可以截圖帶走的選擇表。</p><p><b>講稿</b>：這張請大家拍照。翻譯找 Translator，語言辨識找 Language Detector，摘要找 Summarizer，開放式問答與資料擷取找 Prompt，寫作改寫找 Writer、Rewriter，校對找 Proofreader。最後兩列請記得是試驗階段。</p><p><b>時間</b>：1 分 30 秒。</p><p><b>過場</b>：知道選誰之後，你的電腦能不能跑？下一段講環境。</p><p><b>展示</b>：不用操作。</p><p><b>名詞</b>：Stable = 已在 Chrome Stable 通道；語言限制請以官方文件為準。</p></aside>
+</section>
+
+<!-- ============ PART 4 ============ -->
+<section class="slide divider" data-part="Part 4 · 環境" data-time="">
+  <div style="margin-top:250px"><span class="tag">Part 4</span><h1 style="font-size:110px">開發環境與<span class="o">限制</span></h1><p class="muted" style="font-size:38px;margin-top:20px">模型不是每次都立刻能用</p></div>
+  <aside class="notes"><p>章節轉場頁，約 10 秒。「寫程式之前，先確認環境，不然 Demo 會翻車。」</p></aside>
+</section>
+
+<section class="slide" data-part="Part 4 · 環境" data-time="2:00">
+  <span class="tag">04 · Getting Started</span>
+  <h2>如何<span class="o">開始使用</span>？</h2>
+  <div class="row">
+    <div class="col card hl"><h3>Gemini Nano 系（Prompt、Summarizer）</h3>
+      <ul style="font-size:26px"><li>Chrome 桌面版（Prompt 網頁 148、擴充 138）</li><li>Windows 10/11 · macOS 13+ · Linux · Chromebook Plus</li><li>可用空間 ≥ 22 GB（Chrome 設定檔所在磁碟）</li><li>GPU VRAM &gt; 4GB，或 16GB RAM + 4 核心 CPU</li><li>首次下載需不計量網路</li></ul></div>
+    <div class="col card"><h3>Translator · Language Detector</h3>
+      <ul style="font-size:26px"><li>Chrome 桌面版 138（穩定版）</li><li>使用專用模型，<b>不套用</b>上面的 Gemini Nano 硬體門檻</li><li>依語言對下載語言套件</li><li>不支援行動裝置、不可用於 Web Worker</li><li>Translator.create() 需要使用者操作（user activation）</li></ul></div>
+  </div>
+  <div class="row" style="margin-top:22px">
+    <div class="col card" style="padding:18px 28px"><p style="font-size:26px;margin:0">🔒 <b>安全環境</b>：HTTPS 或 localhost</p></div>
+    <div class="col card" style="padding:18px 28px"><p style="font-size:26px;margin:0">🔧 <b class="pre o">chrome://on-device-internals</b> 查看模型狀態</p></div>
+    <div class="col card" style="padding:18px 28px"><p style="font-size:26px;margin:0">🧪 <b>Web AI Studio</b> 與官方 Demo 線上試玩</p></div>
+  </div>
+  <div class="foot"><span>Chrome Built-in AI</span><span>10 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：讓觀眾回家第一件事知道要檢查什麼。</p><p><b>講稿</b>：最容易踩雷的是：把 Gemini Nano 的硬體門檻套到所有 API。其實 Translator 跟 Language Detector 用的是專用模型，條件不同。Prompt、Summarizer 這類 Gemini Nano 路線，要桌機、要 22GB 空間、要夠力的 GPU 或足夠的 RAM 和 CPU。下方三個小工具：HTTPS／localhost 是必要環境；chrome://on-device-internals 可以看模型狀態與下載；官方還提供線上試玩與 Demo 可以快速驗證。</p><p><b>時間</b>：2 分鐘。</p><p><b>過場</b>：就算環境符合，模型也不是每次都立刻能用。</p><p><b>展示</b>：可現場開 chrome://on-device-internals 給大家看一眼。</p><p><b>名詞</b>：user activation = 使用者剛點擊或按鍵後的短暫授權狀態。具體數字與步驟請以官方文件為準，並以 Web AI Studio 的當前說明為準。</p></aside>
+</section>
+
+<section class="slide" data-part="Part 4 · 環境" data-time="1:30">
+  <span class="tag">04 · Lifecycle</span>
+  <h2>模型不是每次都能<span class="o">立即使用</span></h2>
+  <div class="card" style="margin-bottom:26px"><div class="flow" style="justify-content:center"><span class="node or">availability()</span><span class="arr">→</span><span style="font-size:26px" class="muted">回傳四種狀態</span></div></div>
+  <div class="row">
+    <div class="col card" style="border-color:var(--green)"><h3 class="g">available</h3><p style="font-size:26px">可直接 create() 使用</p></div>
+    <div class="col card" style="border-color:var(--yellow)"><h3 class="y">downloadable</h3><p style="font-size:26px">需先下載。<b>由使用者點擊觸發 create()</b>，並顯示進度</p></div>
+    <div class="col card" style="border-color:var(--blue)"><h3 class="b">downloading</h3><p style="font-size:26px">下載中。顯示進度，不要重複觸發</p></div>
+    <div class="col card" style="border-color:var(--red)"><h3 class="r">unavailable</h3><p style="font-size:26px">裝置或語言不支援。<b>走 Fallback</b></p></div>
+  </div>
+<pre class="code sm" style="margin-top:24px">const session = await LanguageModel.create({
+>>  monitor(m) { m.addEventListener('downloadprogress', e => setProgress(e.loaded)); }
+});</pre>
+  <div class="foot"><span>Chrome Built-in AI</span><span>11 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：把 UI 狀態設計成開發者的習慣。</p><p><b>講稿</b>：availability 會回四種值。available 就直接用；downloadable 代表要下載，這時要在使用者點擊後才 create，並顯示進度條；downloading 就是正在下載；unavailable 就別硬撐，直接走備案。很多人會在頁面一載入就偷跑下載，這是不好的體驗，也可能被瀏覽器擋。</p><p><b>時間</b>：1 分 30 秒。</p><p><b>過場</b>：台灣開發者還有一個更現實的問題：繁體中文。</p><p><b>展示</b>：橘色標記的是進度監聽。</p><p><b>名詞</b>：downloadprogress 事件的 e.loaded 為 0 到 1 的比例。</p></aside>
+</section>
+
+<section class="slide" data-part="Part 4 · 環境" data-time="1:30">
+  <span class="tag">04 · For Taiwan Devs</span>
+  <h2>台灣開發者最該注意：<span class="o">繁體中文</span></h2>
+  <div class="row">
+    <div class="col card" style="border-color:var(--green)"><h3 class="g">✓ Translator</h3><p style="font-size:28px;margin:0">支援 <span class="pre o">zh-Hant</span>（繁體中文）。語言對以官方列表為準，目前沒有 API 可動態查詢全部組合。</p></div>
+    <div class="col card" style="border-color:var(--green)"><h3 class="g">✓ Language Detector</h3><p style="font-size:28px;margin:0">可用於多語系輸入，先判斷再決定下一步。</p></div>
+    <div class="col card" style="border-color:var(--yellow)"><h3 class="y">⚠ Prompt API</h3><p style="font-size:28px;margin:0">官方列出 <b>en / ja / es / de / fr</b>。<b>不能預設完整支援繁體中文</b>。</p></div>
+  </div>
+  <div class="card hl" style="margin-top:26px"><h3>建議的產品作法</h3>
+    <div class="flow" style="margin-top:10px"><span class="node">使用者輸入</span><span class="arr">→</span><span class="node bl">Detector 判斷語言</span><span class="arr">→</span><span class="node gr">支援？本機處理</span><span class="arr">→</span><span class="node ye">不支援？先翻成 en 再處理</span><span class="arr">→</span><span class="node rd">仍不行 → 雲端</span></div>
+  </div>
+  <div class="foot"><span>Chrome Built-in AI</span><span>12 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：避免台灣開發者在繁中上踩雷。</p><p><b>講稿</b>：Translator 支援 zh-Hant，這是好消息。但 Prompt API 官方目前只列五種語言，繁中不在名單上。所以不要寫個 prompt 就假設它中文很好。實務作法是做語言檢測與 fallback：先偵測；支援就本機；不支援可以先用 Translator 轉成英文處理，必要時再送雲端。這個「先翻成英文」是一種工程手法，品質仍要自己測。</p><p><b>時間</b>：1 分 30 秒。</p><p><b>過場</b>：理論講完了，換你們看真的跑起來。Demo 時間。</p><p><b>展示</b>：流程圖由左向右。</p><p><b>名詞</b>：zh-Hant = 繁體中文的 BCP 47 語言標籤。</p></aside>
+</section>
+
+<!-- ============ PART 5 DEMO ============ -->
+<section class="slide divider" data-part="Part 5 · Live Demo" data-time="">
+  <div style="margin-top:230px"><span class="tag">Part 5 · 13 min</span><h1 style="font-size:116px">Live <span class="o">Demo</span></h1>
+  <p class="muted" style="font-size:38px;margin-top:20px">Demo 1：不用 API Key 的翻譯工具　·　Demo 2：Gemini Nano 本機 AI</p>
+  <p style="font-size:28px;margin-top:40px" class="y">開場前：環境檢查 · 模型預先下載 · 備援影片與截圖就緒</p></div>
+  <aside class="notes"><p>轉場頁，約 10 秒。切到 Demo 前請再確認：Chrome 版本、模型已下載、網路狀態、備援影片已開在另一個分頁。</p></aside>
+</section>
+
+<section class="slide demo" data-part="Part 5 · Demo 1" data-time="1:00">
+  <span class="tag">Demo 1 · 瀏覽器即時翻譯</span>
+  <h2>建立<span class="o">不用 API Key</span> 的翻譯工具</h2>
+  <div class="row">
+    <div class="col" style="flex:1.2">
+      <div class="mock"><div class="bar"><i style="background:#ea4335"></i><i style="background:#fbbc04"></i><i style="background:#34a853"></i><span style="margin-left:12px">translator-demo</span></div>
+      <div class="body">
+        <p class="lbl">來源文字</p><div class="out" style="min-height:90px;color:#eee">Local AI makes web apps faster and more private.</div>
+        <div style="display:flex;gap:14px;margin:16px 0;align-items:center"><span class="pill ok">偵測語言：en 98%</span><span class="muted" style="font-size:28px">→</span><span class="pill ok">繁體中文 zh-Hant</span></div>
+        <p class="lbl">翻譯結果</p><div class="out" style="min-height:90px">本機 AI 讓網頁應用更快、更注重隱私。</div>
+        <div style="margin-top:14px"><span class="pill ready">模型：available · 本機執行</span></div>
+      </div></div>
+    </div>
+    <div class="col">
+      <div class="card" style="margin-bottom:16px"><h3>情境</h3><p style="font-size:28px;margin:0">使用者把英文或日文貼進網頁，瀏覽器直接翻成繁體中文。</p></div>
+      <div class="card"><h3>UI 五個元件</h3><ul style="font-size:27px"><li>來源文字輸入框</li><li>偵測語言</li><li>翻譯為繁體中文</li><li>翻譯結果</li><li>本機模型狀態</li></ul></div>
+    </div>
+  </div>
+  <div class="foot"><span>Demo 1 / 2</span><span>13 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：讓觀眾先看到「最終長相」，再看怎麼做。</p><p><b>講稿</b>：先看目標。左邊是我們要做的工具：貼文字、偵測語言、翻成繁中、顯示模型狀態。整個頁面只有前端，沒有任何後端 API，也沒有 API Key。（示意畫面中的翻譯為預先寫好的樣稿。）</p><p><b>時間</b>：1 分鐘。</p><p><b>過場</b>：關鍵程式碼其實沒有幾行，看下一頁。</p><p><b>展示</b>：此頁僅示意；真實操作在第 15 頁。</p><p><b>名詞</b>：—</p></aside>
+</section>
+
+<section class="slide demo" data-part="Part 5 · Demo 1" data-time="2:00">
+  <span class="tag">Demo 1 · Code</span>
+  <h2>Language Detector <span class="o">+</span> Translator</h2>
+<pre class="code" style="font-size:26px">// 1. 偵測語言
+>> const detector = await LanguageDetector.create();
+>> const [top] = await detector.detect(text);       // { detectedLanguage, confidence }
+
+// 2. 檢查語言對，再建立翻譯器
+const pair = { sourceLanguage: top.detectedLanguage, targetLanguage: 'zh-Hant' };
+>> if (await Translator.availability(pair) === 'unavailable') return fallback();
+
+>> const translator = await Translator.create({ ...pair,
+  monitor(m) { m.addEventListener('downloadprogress', e => showProgress(e.loaded)); },
+});
+>> const result = await translator.translate(text);</pre>
+  <div class="note">只展示關鍵片段。完整版（含錯誤處理）在講者備註，也在下一頁的 Live Demo 中實際執行。</div>
+  <div class="foot"><span>Demo 1 / 2</span><span>14 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：讓觀眾看懂五個關鍵呼叫。</p><p><b>講稿</b>：第一步 Language Detector 建立、detect，拿到最可能的語言與信心。第二步把偵測結果當作來源語言，目標固定 zh-Hant，先問 availability；如果不支援，別硬翻，走備案。第三步 create 並監聽下載進度，最後 translate。注意 create 需要使用者點擊，所以要放在按鈕的 click 裡。</p><p><b>時間</b>：2 分鐘。</p><p><b>過場</b>：講完了，我們直接跑。</p><p><b>展示</b>：下方為完整程式碼。</p>
+<pre class="code">async function translateToZhHant(text, onStatus) {
+  if (!('LanguageDetector' in self) || !('Translator' in self)) {
+    return { ok: false, reason: 'unsupported' };
+  }
+  try {
+    const detector = await LanguageDetector.create();
+    const [top] = await detector.detect(text);
+    const src = top.detectedLanguage;
+    if (src.startsWith('zh')) return { ok: true, text, skipped: true };
+
+    const pair = { sourceLanguage: src, targetLanguage: 'zh-Hant' };
+    const availability = await Translator.availability(pair);
+    if (availability === 'unavailable') {
+      return { ok: false, reason: 'unavailable', src };
+    }
+    const translator = await Translator.create({
+      ...pair,
+      monitor(m) {
+        m.addEventListener('downloadprogress', (e) =&gt;
+          onStatus(`下載 ${Math.round(e.loaded * 100)}%`));
+      },
+    });
+    const out = await translator.translate(text);
+    translator.destroy();
+    return { ok: true, text: out, src, confidence: top.confidence };
+  } catch (err) {
+    return { ok: false, reason: 'error', message: String(err) };
+  }
+}</pre></aside>
+</section>
+
+<section class="slide demo" data-part="Part 5 · Demo 1" data-time="3:00">
+  <span class="tag">Demo 1 · LIVE</span>
+  <div class="envbar" data-env></div>
+  <div class="row">
+    <div class="col">
+      <p class="lbl">1 · 輸入英文或日文</p>
+      <textarea id="t-src" rows="4">Local AI makes web apps faster and more private, and it keeps working even when the network is offline.</textarea>
+      <div style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap"><button class="btn" id="t-run">偵測並翻譯</button><button class="btn ghost" id="t-jp">換日文範例</button><button class="btn ghost" id="t-fb">載入備援結果</button></div>
+      <p class="lbl" style="margin-top:22px">2 · 偵測語言　　3 · 模型狀態</p>
+      <div style="display:flex;gap:12px"><span class="pill" id="t-lang">—</span><span class="pill" id="t-state">待命</span></div>
+    </div>
+    <div class="col">
+      <p class="lbl">4 · 翻譯結果（繁體中文）</p>
+      <div class="out" id="t-out" style="min-height:230px">按「偵測並翻譯」開始…</div>
+      <div class="zone" style="margin-top:18px"><p style="font-size:25px;margin:0">✈ <b>離線驗證</b>：模型已下載後，DevTools → Network → Offline，再按一次。<br><b>5 · 沒有呼叫自己的後端 API</b>，Network 面板不會出現推論請求。</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>Demo 1 / 2 · 事前請預先下載 en→zh-Hant、ja→zh-Hant</span><span>15 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：現場證明：偵測、翻譯、離線、無後端。</p><p><b>講稿</b>：這就是上一頁的程式，真的在這個頁面跑。我貼英文，按下去，注意右邊狀態。再換日文。接著打開 DevTools 切 Offline 再按一次，仍然能翻，因為模型已經在本機。最後看 Network，沒有任何對我自己後端的請求。</p><p><b>時間</b>：3 分鐘。</p><p><b>過場</b>：翻譯用的是專用模型。接下來看通用的 Gemini Nano。</p><p><b>展示</b>：1) 英文翻譯 2) 日文 3) Offline 4) Network 面板。</p><p><b>失敗備案</b>：狀態紅色或卡住 → 按「載入備援結果」（頁面會明確標示是備援示意），並切到事先錄好的影片。</p><p><b>事前準備</b>：先在同一台電腦把 en→zh-Hant、ja→zh-Hant 都用過一次，確認顯示 available。</p></aside>
+</section>
+
+<section class="slide demo" data-part="Part 5 · Demo 2" data-time="3:30">
+  <span class="tag">Demo 2 · Prompt API · LIVE</span>
+  <div class="envbar" data-env></div>
+  <div class="row">
+    <div class="col" style="flex:.85">
+      <ul class="steps" id="p-steps">
+        <li data-s="1"><i>1</i>檢查是否支援 Prompt API</li>
+        <li data-s="2"><i>2</i>檢查模型是否可用</li>
+        <li data-s="3"><i>3</i>建立 LanguageModel Session</li>
+        <li data-s="4"><i>4</i>送出英文 Prompt</li>
+        <li data-s="5"><i>5</i>取得回覆並釋放 Session</li>
+      </ul>
+      <div style="display:flex;gap:12px;margin-top:14px"><button class="btn" id="p-run">執行</button><button class="btn ghost" id="p-fb">備援結果</button></div>
+      <p class="muted" id="p-msg" style="font-size:22px;margin-top:10px"></p>
+    </div>
+    <div class="col" style="flex:1.15">
+      <p class="lbl">Prompt（英文）</p>
+      <textarea id="p-in" rows="3">Explain in two sentences why running AI inside the browser can help privacy.</textarea>
+      <p class="lbl" style="margin-top:16px">AI 回覆</p>
+      <div class="out" id="p-out" style="min-height:210px">等待執行…</div>
+    </div>
+  </div>
+<pre class="code sm" style="margin-top:14px;font-size:21px">const s = await LanguageModel.create({ expectedInputs:[{type:'text',languages:['en']}], expectedOutputs:[{type:'text',languages:['en']}] });
+const r = await s.prompt(input);  s.destroy();</pre>
+  <div class="foot"><span>Demo 2 / 2</span><span>16 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：展示 Prompt API 完整生命週期。</p><p><b>講稿</b>：這一頁的左邊就是五個步驟，執行時會依序亮起：先檢查 API 存在、availability、create、prompt，最後 destroy。我們用英文提問，因為 Prompt API 官方支援語言是英、日、西、德、法。（若 availability 顯示 downloadable，要在點擊後下載，會有進度。）</p><p><b>時間</b>：3 分 30 秒。</p><p><b>過場</b>：問答之外，更實用的是把文字變成結構化資料。</p><p><b>展示</b>：按「執行」，讀出每個步驟；再換一個英文問題。</p><p><b>失敗備案</b>：若步驟 1 或 2 失敗，說明硬體限制（22GB、GPU/RAM 條件），按「備援結果」並播放錄影。</p><p><b>名詞</b>：Session 用完就 destroy，避免佔用記憶體。</p>
+<pre class="code">async function askLocal(input) {
+  if (!('LanguageModel' in self)) throw new Error('unsupported');
+  const options = {
+    expectedInputs:  [{ type: 'text', languages: ['en'] }],
+    expectedOutputs: [{ type: 'text', languages: ['en'] }],
+  };
+  const availability = await LanguageModel.availability(options);
+  if (availability === 'unavailable') throw new Error('unavailable');
+  const session = await LanguageModel.create(options);
+  try { return await session.prompt(input); }
+  finally { session.destroy(); }
+}</pre></aside>
+</section>
+
+<section class="slide demo" data-part="Part 5 · Demo 2" data-time="3:30">
+  <span class="tag">Demo 2 · Structured Output · LIVE</span>
+  <h2 style="font-size:56px;margin-bottom:16px">從自然語言<span class="o">提取結構化資料</span></h2>
+  <div class="row">
+    <div class="col" style="flex:1.1">
+      <p class="lbl">輸入：英文活動介紹</p>
+      <textarea id="e-in" rows="5">Join WordPress Taipei Meetup on December 12, 2026 at Taipei Tech Hub. An evening workshop on building AI features inside WordPress, open to all levels.</textarea>
+      <div style="display:flex;gap:12px;margin-top:12px"><button class="btn" id="e-run">提取為 JSON</button><button class="btn ghost" id="e-fb">備援結果</button><span class="pill" id="e-state" style="align-self:center">待命</span></div>
+<pre class="code sm" style="margin-top:14px;font-size:20px">const result = await session.prompt(text, {
+>>  responseConstraint: eventSchema   // JSON Schema
+});
+>> const data = JSON.parse(result);  // 仍需 try/catch + 驗證</pre>
+    </div>
+    <div class="col">
+      <p class="lbl">輸出：JSON → 表單欄位</p>
+      <table id="e-tbl" style="font-size:26px"><tr><th>欄位</th><th>值</th><th></th></tr>
+        <tr><td>Event Title</td><td id="e-title">—</td><td id="e-v1"></td></tr>
+        <tr><td>Date</td><td id="e-date">—</td><td id="e-v2"></td></tr>
+        <tr><td>Location</td><td id="e-loc">—</td><td id="e-v3"></td></tr>
+        <tr><td>Category</td><td id="e-cat">—</td><td id="e-v4"></td></tr></table>
+      <div class="out" id="e-raw" style="min-height:90px;margin-top:12px;font:400 20px/1.4 var(--mono);color:#9ee493">// raw JSON</div>
+    </div>
+  </div>
+  <div class="note warn">結構化輸出不保證每次都合格：一定要 JSON.parse + Schema 驗證，失敗就重試或 fallback。</div>
+  <div class="foot"><span>Demo 2 / 2</span><span>17 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：展示本機模型的實務價值：表單自動填、內容管理、資料擷取。</p><p><b>講稿</b>：想像後台貼一段活動介紹，自動填好標題、日期、地點、分類。Prompt API 支援用 JSON Schema 當 responseConstraint 限制輸出。但請注意，這個參數與格式請以你使用的 Chrome 版本的官方文件為準；而且即使有限制，我也一定做 JSON.parse 加欄位驗證，右邊的綠勾紅叉就是驗證結果。</p><p><b>時間</b>：3 分 30 秒。</p><p><b>過場</b>：兩個 Demo 結束，接下來談怎麼把這些放進正式產品。</p><p><b>展示</b>：按「提取為 JSON」，指給大家看每個欄位的驗證。</p><p><b>失敗備案</b>：模型輸出不合格是正常的，重按一次；仍失敗按「備援結果」（頁面標示為備援示意）。</p>
+<pre class="code">const eventSchema = {
+  type: 'object',
+  properties: {
+    title:    { type: 'string' },
+    date:     { type: 'string' },
+    location: { type: 'string' },
+    category: { type: 'string', enum: ['conference', 'workshop', 'meetup', 'other'] },
+  },
+  required: ['title', 'date', 'location', 'category'],
+  additionalProperties: false,
+};
+
+const session = await LanguageModel.create({
+  expectedInputs:  [{ type: 'text', languages: ['en'] }],
+  expectedOutputs: [{ type: 'text', languages: ['en'] }],
+});
+const raw = await session.prompt(
+  `Extract event info as JSON:\n\n${text}`,
+  { responseConstraint: eventSchema });
+let data;
+try { data = JSON.parse(raw); } catch { /* retry or fallback */ }
+const valid = data &amp;&amp; ['title','date','location','category']
+  .every((k) =&gt; typeof data[k] === 'string' &amp;&amp; data[k].length);
+session.destroy();</pre></aside>
+</section>
+
+<!-- ============ PART 6 ============ -->
+<section class="slide" data-part="Part 6 · 產品架構" data-time="2:00">
+  <span class="tag">06 · Production</span>
+  <h2>真實網站不能<span class="o">只依賴 Chrome AI</span></h2>
+  <div class="flow" style="margin-bottom:26px"><span class="node">User</span><span class="arr">→</span><span class="node bl">Web App</span><span class="arr">→</span><span class="node ye">AI Capability Detection</span></div>
+  <div class="row">
+    <div class="col card hl"><h3 class="g">✓ 支援且任務合適</h3><div class="flow" style="margin-top:10px"><span class="node gr">Chrome Built-in AI</span><span class="arr">→</span><span class="node">本機結果</span></div><p class="muted" style="font-size:25px;margin-top:14px">高頻、輕量、對隱私敏感：翻譯、語言辨識、表單輔助</p></div>
+    <div class="col card"><h3 class="r">✕ 不支援，或任務超出能力</h3><div class="flow" style="margin-top:10px"><span class="node bl">Backend</span><span class="arr">→</span><span class="node rd">Cloud AI API</span></div><p class="muted" style="font-size:25px;margin-top:14px">舊瀏覽器、手機、語言不支援、需要大模型</p></div>
+  </div>
+<pre class="code sm" style="margin-top:22px">async function pickRuntime(task) {
+>>  if ('Translator' in self &amp;&amp; await canRunLocally(task)) return 'local';
+>>  return 'cloud';  // Fallback：保證所有使用者都能用
+}</pre>
+  <div class="foot"><span>Chrome Built-in AI</span><span>18 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：說明為什麼一定要有 fallback。</p><p><b>講稿</b>：真實使用者有各種瀏覽器、手機、舊電腦。所以架構是：先做能力偵測；能用本機而且任務合適，就用 Chrome；不行就走你的後端打雲端。對使用者來說，功能永遠都在，只是背後走哪條路不同。</p><p><b>時間</b>：2 分鐘。</p><p><b>過場</b>：那要怎麼放進你現有的專案？</p><p><b>展示</b>：沿著圖講兩條路徑。</p><p><b>名詞</b>：Capability Detection = Feature Detection + availability() 的組合判斷。</p></aside>
+</section>
+
+<section class="slide" data-part="Part 6 · 產品架構" data-time="1:30">
+  <span class="tag">06 · Integration</span>
+  <h2>如何整合到<span class="o">現有 Web 專案</span>？</h2>
+  <div class="row" style="margin-bottom:22px">
+    <div class="col card"><h3 class="b">WordPress</h3><p style="font-size:26px;margin:0">文章翻譯、後台 AI 功能（如：編輯器內摘要、語言偵測）</p></div>
+    <div class="col card"><h3 class="g">React / Vue</h3><p style="font-size:26px;margin:0">本機 AI 表單助手、多語系介面</p></div>
+    <div class="col card"><h3 class="y">SaaS</h3><p style="font-size:26px;margin:0">本機處理高頻輕量任務，複雜請求交給雲端</p></div>
+  </div>
+  <div class="card hl"><h3>七個實務重點</h3>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px 22px;font-size:26px">
+      <span>① Feature Detection</span><span>② 模型生命週期</span><span>③ Session 管理</span><span>④ 使用者告知</span>
+      <span>⑤ 錯誤處理</span><span>⑥ 隱私</span><span>⑦ 瀏覽器相容性</span><span class="muted">⑧ 漸進增強</span></div></div>
+  <div class="foot"><span>Chrome Built-in AI</span><span>19 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：讓三種背景的人都找到切入點。</p><p><b>講稿</b>：WordPress 的話，可以在後台編輯器加一個本機翻譯或摘要按鈕；React、Vue 就包成一個 hook 或 composable，做表單助手；SaaS 則把高頻小任務留在本機，複雜的丟雲端。下面幾個重點：一定先做 feature detection；模型下載要有 UI；session 用完要 destroy；要告知使用者「這是本機 AI」，也要處理錯誤與隱私說明，並做漸進增強，不支援的瀏覽器也要能用。</p><p><b>時間</b>：1 分 30 秒。</p><p><b>過場</b>：很多人會問「這樣能省多少錢？」我們誠實算一下。</p><p><b>展示</b>：不用操作。</p><p><b>名詞</b>：漸進增強 = 基本功能人人可用，支援的環境才升級體驗。</p></aside>
+</section>
+
+<section class="slide" data-part="Part 6 · 產品架構" data-time="1:30">
+  <span class="tag">06 · Cost (假設情境)</span>
+  <h2>本機 AI 可以<span class="o">省多少錢</span>？</h2>
+  <div class="card hl" style="margin-bottom:22px"><p class="lbl">每月節省成本</p>
+    <p style="font:700 40px/1.5 var(--mono);margin:0;color:#fff">每月節省 = <span class="o">成功轉移到本機的請求數</span> × <span class="b">每次雲端處理成本</span></p></div>
+  <div class="row">
+    <div class="col card"><h3>示意情境（假設）</h3><ul style="font-size:27px"><li>每月 10,000 次翻譯</li><li>全部走雲端 → 10,000 次都有雲端成本</li><li>部分改由 Chrome 本機執行 → 只有「成功轉移」的那部分省下</li></ul><p class="muted" style="font-size:24px;margin-top:8px">※ 此處不放實際單價與金額；請代入你的服務報價。</p></div>
+    <div class="col card" style="border-color:var(--yellow)"><h3 class="y">本機不是零成本</h3><ul style="font-size:27px"><li>使用者裝置的資源消耗</li><li>相容性：不支援的人仍走雲端</li><li>維護：fallback 與兩套邏輯</li></ul></div>
+  </div>
+  <div class="foot"><span>Chrome Built-in AI</span><span>20 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：以公式取代拍腦袋的數字，避免誤導。</p><p><b>講稿</b>：我不會給你一個漂亮的百分比，因為每個產品的條件不同。公式很簡單：能轉到本機的成功請求數，乘上原本每次的雲端成本。例如每月一萬次翻譯，如果其中某些成功在本機完成，那一部分就省下。但請記得，不支援的裝置仍然要走雲端，所以「成功轉移」才是關鍵變數。另外本機不是免費，還有使用者裝置資源、相容性與維護成本。</p><p><b>時間</b>：1 分 30 秒。</p><p><b>過場</b>：好，來收尾。</p><p><b>展示</b>：公式停留 10 秒。</p><p><b>名詞</b>：此頁全部為假設情境，不代表任何實際價格。</p></aside>
+</section>
+
+<!-- ============ PART 7 ============ -->
+<section class="slide divider" data-part="Part 7 · 總結" data-time="1:00">
+  <span class="tag">Takeaways</span>
+  <h2 style="font-size:76px;margin-top:40px">三個關鍵觀念</h2>
+  <div style="display:grid;gap:22px;margin-top:20px">
+    <div class="card hl" style="display:flex;gap:28px;align-items:center"><span style="font:900 80px var(--mono)" class="o">1</span><p style="font-size:40px;margin:0;color:#fff"><b>AI 不一定要在雲端。</b></p></div>
+    <div class="card" style="display:flex;gap:28px;align-items:center"><span style="font:900 80px var(--mono)" class="b">2</span><p style="font-size:40px;margin:0;color:#fff"><b>JavaScript 已經能直接呼叫</b>瀏覽器管理的 AI 模型。</p></div>
+    <div class="card" style="display:flex;gap:28px;align-items:center"><span style="font:900 80px var(--mono)" class="g">3</span><p style="font-size:40px;margin:0;color:#fff"><b>正式產品要兼顧</b>本機 AI、雲端 AI 與跨瀏覽器相容性。</p></div>
+  </div>
+  <p class="o" style="font-size:40px;font-weight:700;margin-top:28px">下一個網站功能，可以先用本機 AI 解決嗎？</p>
+  <div class="foot"><span>Chrome Built-in AI</span><span>21 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：留下三句話與一個行動問題。</p><p><b>講稿</b>：帶走三件事：AI 不一定在雲端；JavaScript 已經能呼叫瀏覽器管理的模型；正式產品要兼顧本機、雲端和相容性。回家後請問自己一個問題：下一個功能，有沒有哪一小塊可以先用本機 AI 解決？</p><p><b>時間</b>：1 分鐘。</p><p><b>過場</b>：資源都放在最後一頁，我們開放提問。</p><p><b>展示</b>：不用操作。</p></aside>
+</section>
+
+<section class="slide" data-part="Part 7 · 總結" data-time="1:00">
+  <span class="tag">Thank you · Q&amp;A</span>
+  <h1 style="font-size:84px;line-height:1.1">The Browser Is Becoming<br>an <span class="o">AI Runtime.</span></h1>
+  <p style="font-size:44px;color:#fff;margin-top:14px">瀏覽器正在成為 AI 的執行環境。</p>
+  <div class="row" style="margin-top:34px;align-items:center">
+    <div class="col" style="flex:none;text-align:center"><div class="qr" data-qr="https://developer.chrome.com/docs/ai/built-in"><span>QR 載入中</span></div><p style="font-size:22px;margin-top:10px">官方文件</p></div>
+    <div class="col" style="flex:none;text-align:center"><div class="qr" data-qr="https://chrome.dev/web-ai-demos/"><span>QR 載入中</span></div><p style="font-size:22px;margin-top:10px">官方 Demo</p></div>
+    <div class="col card" style="font-size:28px"><h3>Bruce Lee 李冠緯</h3><p style="font-size:26px;margin:0">哈拉設計 創辦人<br>GitHub：github.com/supergud<br>LinkedIn：linkedin.com/in/bruce-lee-supergud<br><span class="muted">Slides：supergud.github.io/slides/</span></p></div>
+  </div>
+  <div class="foot"><span>Q&amp;A</span><span>22 / 22</span></div>
+  <aside class="notes"><p><b>目的</b>：收尾、給資源、開放 Q&amp;A。</p><p><b>講稿</b>：最後一句話：瀏覽器正在成為 AI 的執行環境。左邊兩個 QR 是官方文件與官方 Demo，回去就能試。右邊是我的聯絡方式。現在歡迎提問。</p><p><b>時間</b>：1 分鐘（Q&amp;A 另計）。</p><p><b>可能被問</b>：手機能用嗎？（桌機為主，文件寫明不支援行動裝置）／中文可以嗎？（Translator 支援 zh-Hant，Prompt 需自行測試）／Safari、Firefox？（Translator 文件標示不支援）。</p></aside>
+</section>
+
+<!-- ============ APPENDIX ============ -->
+<section class="slide" data-part="附錄 A · 事前準備" data-time="">
+  <span class="tag">Appendix A · Demo 事前準備清單</span>
+  <h2 style="font-size:56px">環境與事前準備</h2>
+  <div class="row">
+    <div class="col card"><h3>設備</h3><ul style="font-size:25px"><li>Chrome 桌面穩定版（Prompt 網頁版 ≥ 148）</li><li>可用空間 ≥ 22GB；GPU VRAM &gt; 4GB 或 16GB RAM + 4 核</li><li>用 HTTPS 站台或 localhost 開啟</li><li>Demo 用電腦外接投影前先測一次</li></ul></div>
+    <div class="col card"><h3>模型</h3><ul style="font-size:25px"><li>演講前一天用不計量網路下載 Gemini Nano</li><li>Translator：en→zh-Hant、ja→zh-Hant 各執行一次</li><li>chrome://on-device-internals 確認狀態</li><li>演講前再跑一次 Demo 完整流程</li></ul></div>
+    <div class="col card"><h3>備援</h3><ul style="font-size:25px"><li>每個 Demo 的錄影（&lt; 1 分鐘）</li><li>成功輸出截圖</li><li>另開分頁備好官方 Demo</li><li>關閉通知與不必要分頁</li></ul></div>
+  </div>
+  <div class="foot"><span>Appendix A</span><span>A1</span></div>
+  <aside class="notes"><p>附錄，不在 40 分鐘內。可作為彩排檢查表。</p></aside>
+</section>
+
+<section class="slide" data-part="附錄 B · API 狀態表" data-time="">
+  <span class="tag">Appendix B · API 支援狀態與限制比較（2026/11 官方文件）</span>
+  <table style="font-size:24px">
+    <tr><th>API</th><th>狀態</th><th>版本</th><th>模型</th><th>語言／限制</th></tr>
+    <tr><td><b>Prompt</b></td><td><span class="badge st">Stable</span></td><td>網頁 148／擴充 138</td><td>Gemini Nano</td><td>en ja es de fr；桌機；22GB；GPU 或 RAM/CPU 門檻；取樣參數 Origin Trial</td></tr>
+    <tr><td><b>Summarizer</b></td><td><span class="badge st">Stable</span></td><td>138</td><td>Gemini Nano</td><td>依官方文件；與 Gemini Nano 硬體條件相關</td></tr>
+    <tr><td><b>Translator</b></td><td><span class="badge st">Stable</span></td><td>138</td><td>專用模型</td><td>支援 zh-Hant；語言對下載；非行動裝置；非 Worker；需 user activation</td></tr>
+    <tr><td><b>Language Detector</b></td><td><span class="badge st">Stable</span></td><td>138</td><td>專用模型</td><td>回傳語言代碼＋信心值</td></tr>
+    <tr><td><b>Writer</b></td><td><span class="badge dt">Dev Trial</span></td><td>—</td><td>Gemini Nano</td><td>試驗中，勿直接上線</td></tr>
+    <tr><td><b>Rewriter</b></td><td><span class="badge dt">Dev Trial</span></td><td>—</td><td>Gemini Nano</td><td>試驗中，勿直接上線</td></tr>
+    <tr><td><b>Proofreader</b></td><td><span class="badge dt">Dev Trial</span></td><td>—</td><td>Gemini Nano</td><td>官方頁面描述不一致（Dev Trial／Origin Trial）；上線前再確認</td></tr>
+  </table>
+  <div class="note">Firefox、Safari 目前不支援 Translator（官方文件）。Writer／Rewriter／Proofreader 的模型欄為依官方架構的概述，請以官方頁面為準。</div>
+  <div class="foot"><span>Appendix B</span><span>A2</span></div>
+  <aside class="notes"><p>附錄。Q&amp;A 時若被問版本與限制可翻到這頁。</p></aside>
+</section>
+
+<section class="slide" data-part="附錄 C · 失敗備案" data-time="">
+  <span class="tag">Appendix C · Demo 失敗備案</span>
+  <h2 style="font-size:56px">現場出狀況時怎麼辦</h2>
+  <table style="font-size:26px">
+    <tr><th>狀況</th><th>第一步</th><th>備案</th></tr>
+    <tr><td>顯示 unsupported</td><td>檢查 Chrome 版本、是否為 HTTPS/localhost</td><td>說明限制，播放錄影</td></tr>
+    <tr><td>顯示 downloadable／下載很慢</td><td>點擊後等待進度，不要重複點</td><td>換已預載的語言對；播放錄影</td></tr>
+    <tr><td>Prompt API unavailable</td><td>說明硬體限制（22GB、GPU/RAM）</td><td>按「備援結果」＋成功截圖</td></tr>
+    <tr><td>輸出 JSON 不合格</td><td>再按一次</td><td>說明這正是要做驗證的原因；用備援結果</td></tr>
+    <tr><td>斷網、投影問題</td><td>已下載模型可離線</td><td>切換錄影與截圖</td></tr>
+  </table>
+  <div class="note">正式展示優先 Live Demo；錄影與截圖只當故障備援。頁面的「備援結果」是預先寫好的示意輸出，會明確標示，不假裝是即時結果。</div>
+  <div class="foot"><span>Appendix C</span><span>A3</span></div>
+  <aside class="notes"><p>附錄，彩排用。</p></aside>
+</section>
+
+<section class="slide" data-part="附錄 D · 參考來源" data-time="">
+  <span class="tag">Appendix D · 官方參考來源</span>
+  <h2 style="font-size:56px">參考來源</h2>
+  <ul style="font-family:var(--mono);font-size:28px;line-height:1.9">
+    <li>developer.chrome.com/docs/ai/built-in</li>
+    <li>developer.chrome.com/docs/ai/built-in-apis</li>
+    <li>developer.chrome.com/docs/ai/prompt-api</li>
+    <li>developer.chrome.com/docs/ai/translator-api</li>
+    <li>developer.chrome.com/docs/ai/get-started</li>
+    <li>chrome.dev/web-ai-demos/</li>
+  </ul>
+  <div class="note">本簡報內容依 2026 年 11 月查閱之官方文件整理。API 狀態與版本會變動，請以官方頁面為準。</div>
+  <div class="foot"><span>Appendix D</span><span>A4</span></div>
+  <aside class="notes"><p>附錄。</p></aside>
+</section>
+
+</div></div>
+
+<div id="notesPanel"></div>
+<div id="hud"><b></b></div>
+<div id="ctl"><button id="prev">←</button><span id="count"></span><button id="next">→</button><button id="nbtn">備註 N</button><button id="fbtn">全螢幕 F</button><span id="timer"></span></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var slides=$$('.slide'),idx=0,stage=$('#stage');
+
+/* ---- 語法標示 ---- */
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function highlight(src){
+  var lines=src.replace(/^\n/,'').split('\n'),out=[];
+  lines.forEach(function(l){
+    var hl=false;if(l.indexOf('>> ')===0||l.indexOf('>>')===0&&l.charAt(2)!=='>'){hl=true;l=l.replace(/^>>\s?/,'')}
+    var h=esc(l).replace(/(\/\/.*$)|('(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*")|\b(const|let|await|async|if|return|new|try|catch|finally|throw|function|else|null|true|false|in|of)\b|\b(LanguageModel|LanguageDetector|Translator|Summarizer)\b/g,function(m,c,s,k,n){
+      if(c)return '<span class="c">'+c+'</span>';if(s)return '<span class="s">'+s+'</span>';if(k)return '<span class="k">'+k+'</span>';return '<span class="n">'+n+'</span>'});
+    out.push(hl?'<span class="hl">'+h+'</span>':h);
+  });
+  return out.join('\n');
+}
+$$('pre.code').forEach(function(p){p.innerHTML=highlight(p.textContent)});
+
+/* ---- 縮放 ---- */
+function fit(){
+  var open=document.body.classList.contains('notes-open')&&window.innerWidth>900;
+  var w=window.innerWidth-(open?440:0),h=window.innerHeight,s=Math.min(w/1920,h/1080);
+  stage.style.transform='scale('+s+')';
+  stage.style.margin=(-(1080-1080*s)/2)+'px '+(-(1920-1920*s)/2)+'px';
+}
+window.addEventListener('resize',fit);
+
+/* ---- 導覽 ---- */
+function show(n){
+  idx=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach(function(s,i){s.classList.toggle('active',i===idx)});
+  $('#hud b').style.width=((idx+1)/slides.length*100)+'%';
+  var s=slides[idx];
+  $('#count').textContent=(idx+1)+' / '+slides.length+' · '+(s.getAttribute('data-part')||'')+(s.getAttribute('data-time')?' · 建議 '+s.getAttribute('data-time'):'');
+  try{history.replaceState(null,'','#'+(idx+1))}catch(e){}
+  renderNotes();
+}
+function renderNotes(){
+  var a=$('aside.notes',slides[idx]);
+  var t=slides[idx].getAttribute('data-time');
+  $('#notesPanel').innerHTML='<span class="time">'+(t?'⏱ '+t:'章節頁')+'</span> <b style="color:#888;font-size:14px">'+(slides[idx].getAttribute('data-part')||'')+'</b>'+(a?a.innerHTML:'<p>（無備註）</p>');
+  $$('pre.code',$('#notesPanel')).forEach(function(p){p.innerHTML=highlight(p.textContent)});
+}
+// 注意：備註中的程式碼在 aside 內已先被高標示過，這裡還原為純文字後重新處理
+function fixNotes(){$$('aside.notes pre.code').forEach(function(p){p.innerHTML=esc(p.textContent)})}
+function next(){show(idx+1)}function prev(){show(idx-1)}
+$('#next').onclick=next;$('#prev').onclick=prev;
+$('#nbtn').onclick=toggleNotes;$('#fbtn').onclick=toggleFs;
+function toggleNotes(){document.body.classList.toggle('notes-open');fit();renderNotes()}
+function toggleFs(){if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}
+document.addEventListener('keydown',function(e){
+  var t=e.target&&e.target.tagName;if(t==='TEXTAREA'||t==='INPUT')return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'||(e.key===' '&&t!=='BUTTON')){e.preventDefault();next()}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev()}
+  else if(e.key==='Home')show(0);else if(e.key==='End')show(slides.length-1);
+  else if(e.key==='n'||e.key==='N')toggleNotes();else if(e.key==='f'||e.key==='F')toggleFs();
+});
+var tx=null;document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',function(e){if(tx===null)return;var d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>60){d<0?next():prev()}tx=null});
+var t0=Date.now();setInterval(function(){var m=Math.floor((Date.now()-t0)/60000);$('#timer').textContent='⏱ '+m+' min'},15000);
+
+/* ---- QR ---- */
+$$('[data-qr]').forEach(function(el){try{if(window.QRCode){el.innerHTML='';new QRCode(el,{text:el.getAttribute('data-qr'),width:180,height:180})}else{el.textContent=el.getAttribute('data-qr')}}catch(e){el.textContent=el.getAttribute('data-qr')}});
+
+/* ---- 環境檢查列 ---- */
+var env={detector:'LanguageDetector' in self,translator:'Translator' in self,prompt:'LanguageModel' in self,secure:window.isSecureContext};
+$$('[data-env]').forEach(function(b){
+  function p(ok,label){return '<span class="pill '+(ok?'ok':'bad')+'">'+(ok?'✓ ':'✕ ')+label+'</span>'}
+  b.innerHTML=p(env.secure,'安全環境')+p(env.detector,'LanguageDetector')+p(env.translator,'Translator')+p(env.prompt,'LanguageModel');
+});
+
+/* ---- Demo 1：翻譯 ---- */
+function setPill(el,cls,txt){el.className='pill '+cls;el.textContent=txt}
+var tState=$('#t-state'),tLang=$('#t-lang'),tOut=$('#t-out');
+var JP='ローカルAIは、ウェブアプリをより速く、より安全にします。ネットワークがなくても動きます。';
+$('#t-jp').onclick=function(){$('#t-src').value=JP};
+$('#t-fb').onclick=function(){
+  setPill(tLang,'','en（備援）');setPill(tState,'unavailable','備援示意結果');
+  tOut.textContent='【備援示意結果，非即時推論】\n本機 AI 讓網頁應用更快、更注重隱私，即使離線也能繼續運作。';
+};
+$('#t-run').onclick=async function(){
+  var btn=this,text=$('#t-src').value.trim();if(!text)return;
+  btn.disabled=true;tOut.textContent='處理中…';
+  try{
+    if(!env.detector||!env.translator){setPill(tState,'unsupported','此瀏覽器不支援');tOut.textContent='找不到 LanguageDetector / Translator。請使用桌面版 Chrome（138+）並以 HTTPS 開啟。';return}
+    setPill(tState,'loading','偵測語言…');
+    var detector=await LanguageDetector.create();
+    var res=await detector.detect(text);var top=res[0];var src=top.detectedLanguage;
+    setPill(tLang,'ok',src+'（'+Math.round(top.confidence*100)+'%）');
+    if(src.indexOf('zh')===0){tOut.textContent=text;setPill(tState,'ready','已是中文，略過翻譯');return}
+    var pair={sourceLanguage:src,targetLanguage:'zh-Hant'};
+    var av=await Translator.availability(pair);
+    if(av==='unavailable'){setPill(tState,'unavailable','此語言對不可用');tOut.textContent='Translator 回報 '+src+' → zh-Hant 為 unavailable。請走備案（雲端翻譯）。';return}
+    setPill(tState,'loading',av==='available'?'建立翻譯器…':'下載語言套件…');
+    var tr=await Translator.create({sourceLanguage:src,targetLanguage:'zh-Hant',monitor:function(m){m.addEventListener('downloadprogress',function(e){setPill(tState,'loading','下載 '+Math.round(e.loaded*100)+'%')})}});
+    var out=await tr.translate(text);
+    tOut.textContent=out;setPill(tState,'ready','完成 · 本機執行');
+    if(tr.destroy)tr.destroy();
+  }catch(err){setPill(tState,'error','錯誤');tOut.textContent='發生錯誤：'+(err&&err.message?err.message:err)}
+  finally{btn.disabled=false}
+};
+
+/* ---- Demo 2：Prompt ---- */
+var pOpts={expectedInputs:[{type:'text',languages:['en']}],expectedOutputs:[{type:'text',languages:['en']}]};
+function pStep(n,state,msg){var li=$('#p-steps li[data-s="'+n+'"]');li.className=state;$('i',li).textContent=state==='ok'?'✓':state==='bad'?'✕':n;if(msg)$('#p-msg').textContent=msg}
+function pReset(){$$('#p-steps li').forEach(function(li,i){li.className='';$('i',li).textContent=i+1});$('#p-msg').textContent=''}
+$('#p-fb').onclick=function(){pReset();for(var i=1;i<=5;i++)pStep(i,'ok');$('#p-out').textContent='【備援示意結果，非即時推論】\nOn-device AI processes your text locally, so the content does not have to leave your computer. This reduces the exposure of sensitive data.';$('#p-msg').textContent='備援示意結果'};
+$('#p-run').onclick=async function(){
+  var btn=this,session=null;btn.disabled=true;pReset();$('#p-out').textContent='…';
+  try{
+    pStep(1,'run');if(!env.prompt){pStep(1,'bad','此瀏覽器沒有 LanguageModel（需 Chrome 148+ 桌面版，且硬體符合）');$('#p-out').textContent='不支援：請改用備援結果。';return}pStep(1,'ok');
+    pStep(2,'run');var av=await LanguageModel.availability(pOpts);
+    if(av==='unavailable'){pStep(2,'bad','availability = unavailable（裝置、硬體或語言不支援）');$('#p-out').textContent='模型不可用：請說明硬體限制並使用備援結果。';return}
+    pStep(2,'ok','availability = '+av);
+    pStep(3,'run');
+    session=await LanguageModel.create({expectedInputs:pOpts.expectedInputs,expectedOutputs:pOpts.expectedOutputs,monitor:function(m){m.addEventListener('downloadprogress',function(e){$('#p-msg').textContent='下載模型 '+Math.round(e.loaded*100)+'%'})}});
+    pStep(3,'ok');pStep(4,'run');
+    var r=await session.prompt($('#p-in').value);pStep(4,'ok');
+    $('#p-out').textContent=r;
+    session.destroy();session=null;pStep(5,'ok','Session 已釋放');
+  }catch(err){$('#p-out').textContent='錯誤：'+(err&&err.message?err.message:err);$('#p-msg').textContent=String(err&&err.name||'');if(session)try{session.destroy()}catch(e){}}
+  finally{btn.disabled=false}
+};
+
+/* ---- Demo 2：結構化輸出 ---- */
+var eventSchema={type:'object',properties:{title:{type:'string'},date:{type:'string'},location:{type:'string'},category:{type:'string',enum:['conference','workshop','meetup','other']}},required:['title','date','location','category'],additionalProperties:false};
+var CATS=['conference','workshop','meetup','other'];
+function fillEvent(d,backup){
+  var keys=['title','date','location','category'],ids=['e-title','e-date','e-loc','e-cat'],ok=true;
+  keys.forEach(function(k,i){
+    var v=d&&d[k],good=typeof v==='string'&&v.length>0&&(k!=='category'||CATS.indexOf(v)>=0);
+    if(!good)ok=false;
+    $('#'+ids[i]).textContent=good?v:'—';$('#e-v'+(i+1)).textContent=good?'✓':'✕';$('#e-v'+(i+1)).style.color=good?'#7ee09a':'#ff8f86';
+  });
+  setPill($('#e-state'),ok?'ready':'bad',(backup?'備援示意 · ':'')+(ok?'Schema 驗證通過':'驗證失敗'));
+}
+$('#e-fb').onclick=function(){
+  var d={title:'WordPress Taipei Meetup',date:'2026-12-12',location:'Taipei Tech Hub',category:'workshop'};
+  $('#e-raw').textContent='// 備援示意結果，非即時推論\n'+JSON.stringify(d,null,2);fillEvent(d,true);
+};
+$('#e-run').onclick=async function(){
+  var btn=this,session=null,st=$('#e-state');btn.disabled=true;
+  try{
+    if(!env.prompt){setPill(st,'unsupported','不支援 Prompt API');return}
+    setPill(st,'loading','檢查模型…');
+    var av=await LanguageModel.availability(pOpts);
+    if(av==='unavailable'){setPill(st,'unavailable','模型不可用');return}
+    setPill(st,'loading',av==='available'?'建立 Session…':'下載模型…');
+    session=await LanguageModel.create({expectedInputs:pOpts.expectedInputs,expectedOutputs:pOpts.expectedOutputs,monitor:function(m){m.addEventListener('downloadprogress',function(e){setPill(st,'loading','下載 '+Math.round(e.loaded*100)+'%')})}});
+    setPill(st,'loading','推論中…');
+    var raw=await session.prompt('Extract the event information as JSON with keys title, date (ISO 8601), location, category (conference, workshop, meetup, or other).\n\n'+$('#e-in').value,{responseConstraint:eventSchema});
+    $('#e-raw').textContent=raw;
+    var data;try{data=JSON.parse(raw)}catch(e){setPill(st,'bad','JSON 解析失敗');return}
+    fillEvent(data,false);
+  }catch(err){setPill(st,'error','錯誤');$('#e-raw').textContent=String(err&&err.message||err)}
+  finally{if(session)try{session.destroy()}catch(e){}btn.disabled=false}
+};
+
+/* ---- 啟動 ---- */
+fixNotes();fit();
+var start=parseInt((location.hash||'').slice(1),10);show(isNaN(start)?0:start-1);
+})();
+</script>
+</body>
+</html>
